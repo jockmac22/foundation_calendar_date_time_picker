@@ -27,6 +27,10 @@ There are several requirements you will need to make the Calendar work.  Here's 
 - __date-helpers.js__ -- This is my own Date modification and manipulation helpers.  They are included in the repo, and built into the minified version of foundation_calendar.js.
 - __string-helpers.js__ -- This is my own String modification and manipulation helpers.  They are included in the repo, and built into the minified version of foundation_calendar.js.
 
+## Installation
+
+The index.html file in the repository gives a full description of how to install and use the plugin.  Read the &lt;head&gt; section of the html to see the file requirements, and view the file to read about how to implement the plugin.
+
 ## Customization
 
 If you want to customize the styles of the UI, you can do it directly through the foundation_calendar.css file, or you can add the _calendar.scss file to your Foundation SCSS components directory.  
