@@ -1,0 +1,353 @@
+@import "global"; 
+@import "forms";
+
+$date-picker-border:		1px solid darken($primary-color, 10%);
+$time-picker-border:		1px solid darken($primary-color, 10%);
+
+$header-background:			darken($primary-color, 10%);
+$header-foreground:			#FFF;
+$header-height:				28px;
+$header-font-size:			16px;
+
+$month-background:			$header-background;
+$month-font-size:			$header-font-size;
+$month-height:				$header-height;
+$month-color:				$header-foreground;
+$month-padding:				5px 0;
+$month-arrow-size:			$month-font-size / 2.5;
+$month-arrow-top:			7px;
+$month-arrow-color:			#EEE;
+$month-arrow-hover-color:	darken($month-arrow-color, 10%);
+
+$label-background: 			$primary-color;
+$label-foreground: 			#FFF;
+$label-border:				1px solid $primary-color;
+$label-height:				23px;
+$label-padding:				5px;
+$label-font-size:			11px;
+
+$day-font_size: 			14px;
+$day-background:			#FFF;
+$day-foreground:			$primary-color;
+$day-border:				1px solid #FFF; 
+$day-padding:				3px;
+$day-width:					$day-font-size * 2.25;
+$day-height:				$day-font-size * 1.5;
+
+$hover-border:				1px solid $primary-color;
+$hover-weekend-border:		$hover-border;
+
+$weekend-background:		$secondary_color;
+$weekend-foreground:		$primary-color;
+$weekend-border:			1px solid $secondary-color;
+
+$other-month-foreground:	#CCC;
+$other-month-background:	$day-background;
+$other-month-border:		$day-border;
+
+$other-weekend-foreground:	#BBB;
+$other-weekend-background:	$weekend-background;
+$other-weekend-border:		$weekend-border;
+
+
+$current-background:		$warning-color;
+$current-foreground:		#FFF;
+$current-border:			1px solid $warning-color;
+ 
+.calendar {
+	margin: 0;
+	padding: 0;
+	border: none;
+	position: relative;
+
+	> .hidden {
+		display: none;
+	}
+
+	.display {
+		
+	}
+
+	.selector {
+		width:			100%;
+		display:		table;
+		
+		.clear {
+			position: absolute;
+			height:	24px;
+			width:	auto;
+			right: 5px;
+			top: 11px;
+		}
+		
+		.date-selector,
+		.time-selector {
+			display:	table-cell;
+			margin:		0;
+			padding:	0;
+			height:		24px;
+			width:		100%;
+	        -webkit-appearance: none;
+	        -webkit-border-radius: 0;
+	        border-radius: 0;
+	        @include form-element;
+			
+			.value {
+				margin-left: 10px;
+			}
+		}
+				
+		&.date.time {
+			.date-selector {
+				display:	table-cell;
+				width:		50%;
+				padding-top: 11px;
+				padding-bottom: 5px;
+			}
+			.time-selector {
+				display:	table-cell;
+				width:		50%;
+				padding-top: 11px;
+				padding-bottom: 5px;
+			}
+		}
+	}
+	.time-picker {
+		position: absolute;
+		right: 0;
+		display: none;
+		border: $time-picker-border;
+		width: auto;
+		height: auto;
+		background: #FFF;
+		z-index: 10000;
+		
+		.header {
+			background: $header-background;
+			color: $header-foreground;
+			width:	100%;
+			position: relative;
+			
+			.time {
+				width: 97%;
+				margin: 0 2% 0 0%;
+				text-align: right;
+				height: $header-height;
+				font-size: $header-font-size;
+				color: $header-foreground;
+				padding: $month-padding;
+			}
+		}		
+		
+		> .time {
+
+			.value-control {
+				padding: 10px 3px 0 3px;;				
+				width: auto;
+				text-align: center;
+				display: inline-block;
+				float: left;
+			
+				label {
+					background: $label-background;
+					color:		$label-foreground;
+					font-size:	$label-font-size;
+					text-align:	center;
+					display: 	block;
+					margin:		-10px -3px 0 -3px;
+					padding:	5px 0;
+				}
+			
+				a.value-change {
+					display: 		block;
+					margin:			0 auto;
+					line-height: 	0;
+					span {
+						display: block;
+						width:	0;
+						height: 0;
+						font-size: 0;
+						margin: 0 auto;
+					}
+					&.up {
+						span {
+							border:	8px solid transparent;
+							border-bottom: 8px solid #333;
+						}
+					}
+
+					&.down {
+						span {
+							border:	8px solid transparent;
+							border-top: 8px solid #333;
+						}
+					}
+					
+					@include clearfix;
+				}
+			
+				.display {
+					display:	block;
+					padding:	0 5px;
+					height:		25px;
+					width:		40px;
+					text-align:	center;
+					color:		$primary-color;
+					margin-top:	5px;
+					margin-bottom: 5px;
+				}
+			} 
+		}
+	}
+
+	.date-picker {
+		position: absolute;
+		left: 0;
+		display: none;
+		border: $date-picker-border;
+		width: auto;
+		height: auto;
+		background: #FFF;
+		z-index: 10000;
+
+		.header {
+			background: $month-background;
+			width:	100%;
+			position: relative;
+			
+			.month {
+				width: 80%;
+				margin: 0 20% 0 2%;
+				text-align: left;
+				height: $month-height;
+				font-size: $month-font-size;
+				color:	$month-color;
+				padding: $month-padding;
+			}
+			
+			.month-nav {
+				position: absolute;
+				display: block;
+				top: $month-arrow-top;
+				
+				span {
+					display: block;
+					width: 0;
+					font-size: 0;
+				}
+				
+				&.next {
+					right: 0;
+					span {
+						border: $month-arrow-size solid $month-arrow-color;
+						border-top: $month-arrow-size solid transparent;
+						border-bottom: $month-arrow-size solid transparent;					
+						border-right: $month-arrow-size solid transparent;					
+					}
+				}
+				
+				&.prev {
+					right: 24px;
+					span {
+						border: $month-arrow-size solid $month-arrow-color;
+						border-top: $month-arrow-size solid transparent;
+						border-bottom: $month-arrow-size solid transparent;					
+						border-left: $month-arrow-size solid transparent;
+					}
+				}
+				
+				&:hover {
+
+					&.next {
+						span {
+							border: $month-arrow-size solid $month-arrow-hover-color;
+							border-top: $month-arrow-size solid transparent;
+							border-bottom: $month-arrow-size solid transparent;
+							border-right: $month-arrow-size solid transparent;
+						}
+					}
+				
+					&.prev {
+						span {
+							border: $month-arrow-size solid $month-arrow-hover-color;
+							border-top: $month-arrow-size solid transparent;
+							border-bottom: $month-arrow-size solid transparent;
+							border-left: $month-arrow-size solid transparent;
+						}
+					}
+				}				
+			}
+		}
+		
+		.week {
+			display: block;
+			width: auto;
+			height: auto;
+			white-space: no-wrap;
+			margin: 0;
+			padding: 0;
+			text-align: center;
+			
+			.day {
+				display: inline-block;
+				text-align: center;
+				font-size: $day_font_size;
+				background: $day_background;
+				color: $day_foreground;
+				border: 1px solid #FFF;
+				vertical-align: middle;
+				padding: $day-padding;
+				width: $day-width;
+				height: $day-height;
+				
+				&.weekend {
+					background: $weekend-background;
+					color: $weekend-foreground;
+					border: $weekend-border;					
+				}
+				
+				&.weekend.current,
+				&.current {
+					background: $current-background;
+					color: $current-foreground;
+					border: $current-border;				
+				}				
+				
+				&.other-month {
+					color: $other-month-foreground;
+					background: $other-month-background;
+					border: $other-month-border;
+				}
+				
+				&.other-month.weekend {
+					color: $other-weekend-foreground;
+					background: $other-weekend-background;
+					border: $other-weekend-border;
+				}
+			}
+			
+
+			
+			a.day {
+				&:hover {
+					border: $hover-border;
+				}
+
+				&.weekend:hover {
+					border: $hover-weekend-border;
+				}
+			}
+			
+			&.labels {
+				.day {
+					background: $label-background;
+					color: $label-foreground;
+					border: $label-border;
+					height: $label-height;
+					padding: $label-padding;
+					font-size: $label-font-size;
+				}
+			}
+		}	
+	}
+}
