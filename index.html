@@ -14,7 +14,9 @@
 	<script type="text/javascript" src="js/date.js" ></script>
 	
 	<!-- Add the foundation calendar Javascript -->
-	<script type="text/javascript" src="foundation_calendar-min.js" ></script>
+	<script type="text/javascript" src="foundation_calendar.js" ></script>
+	<script type="text/javascript" src="helpers/date-helpers.js" ></script>
+	<script type="text/javascript" src="helpers/string-helpers.js" ></script>
 	
 	<style type="text/css">
 	label {
@@ -224,6 +226,43 @@
 					
 					&lt;input type="text" data-date-time data-nullable /&gt;
 			</code>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="medium-12 large-8 columns">
+			<h3>UTC Offset</h3>
+			<p>Assuming that the current time is UTC, you can assign an offset value so that the display will update accordingly.  In the current example, the current UTC time is <script>document.write(new Date().format("%H:%M:%S"));</script>.  Our offset is set to -7 hours (US Mountain Time), so the displayed time is minus 7 hours.</p>
+			<p>If you change the time, and then click the "Show the value" button, you will see that the stored value is actually in the calculated UTC time.</p>
+			<div class="row">
+				<div class="small-12 medium-8 large-12 columns medium-centered">
+					<input type="text" data-date-time data-utc-offset="-7" />
+					
+					<button class="small radius" style="margin-top: 10px;" onClick="alert(jQuery(this).parent().find('input').val());return false;" >Show the value</button>
+				</div>
+			</div>
+			
+			<label>Code:</label>
+			<code>
+					&lt;input type="text" data-date-time data-utc-offset="-7" /&gt;
+			</code>
+			<br />
+			<br />
+			<p>If you assign a UTC offset, and a value to the field, it will assume that provided value is UTC, and perform the calculations from there.</p>
+			<div class="row">
+				<div class="small-12 medium-8 large-12 columns medium-centered">
+					<input type="text" data-date-time data-utc-offset="-7" value="1977-07-06 21:32:01" />
+					
+					<button class="small radius" style="margin-top: 10px;" onClick="alert(jQuery(this).parent().find('input').val());return false;" >Show the value</button>
+				</div>
+			</div>
+			
+			<label>Code:</label>
+			<code>
+					&lt;input type="text" data-date-time data-utc-offset="-7" value="1977-07-06 21:32:01" /&gt;
+			</code>
+
+
 		</div>
 	</div>
 

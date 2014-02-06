@@ -54,24 +54,17 @@ $.fcdp = {
 	 ***/
 	getFieldDate: function(opts) {
 		var val = opts.input.val();
-		return opts.nullable && !val ? null : (!opts.nullable && !val ? new Date() : this.getDateFromString(val));
+		date = opts.nullable && !val ? null : (!opts.nullable && !val ? new Date() : this.getDateFromString(val));
+		return date;
 	},
 	
+	// Sets the field date, date option must always be in UTC.
 	setFieldDate: function(opts, date) {
-		var inputVal = '';
-		var dateVal = '--';
-		var timeVal = '--';
-		
-		if (date) {
-			inputVal = date.format(opts.formats['value']);
-			dateVal = date.format(opts.formats['date']);
-			timeVal = date.format(opts.formats['time']);
-		}
+		var inputVal = date ? date.format(opts.formats['value']) : '';
 
 		opts.input.val(inputVal);
-		if (opts.dateSelector) { opts.dateSelector.find('.value').html(dateVal); }
-		if (opts.timeSelector) { opts.timeSelector.find('.value').html(timeVal); }
-		
+
+		date = date ? date.add(opts.utcOffset).hours() : date;
 		this.setWorkingDate(opts, date);
 	},
 	
@@ -79,7 +72,7 @@ $.fcdp = {
 		var date_attr = opts.input.data('working-date');
 		if (!date_attr || ('' + date_attr).length == 0) {
 			date = new Date();
-			this.setWorkingDate(opts, date);
+			this.setWorkingDate(opts, date, true);
 		} else {
 			date = this.getDateFromString(date_attr);
 		}
@@ -88,6 +81,17 @@ $.fcdp = {
 	
 	setWorkingDate: function(opts, date) {
 		opts.input.data('working-date', date ? date.format('%Y-%m-%d %H:%M:%S') : '');		
+		
+		var dateVal = '--';
+		var timeVal = '--';
+
+		if (date) {
+			dateVal = date.format(opts.formats['date']);
+			timeVal = date.format(opts.formats['time']);
+		}
+
+		if (opts.dateSelector) { opts.dateSelector.find('.value').html(dateVal); }
+		if (opts.timeSelector) { opts.timeSelector.find('.value').html(timeVal); }		
 	},
 		
 	
@@ -99,7 +103,9 @@ $.fcdp = {
 		// Determine which display elements are present.
 		var hasTimePicker = (input.is('[data-time]') || input.is('[data-date-time]')) ? true : false
 		var hasDatePicker = (input.is('[data-date]') || input.is('[data-date-time]')) ? true : !hasTimePicker;
-		var nullable = input.is('[data-nullable]');		
+		var nullable = input.is('[data-nullable]');
+		var utcOffset = input.is('[data-utc-offset]') ? parseInt(input.data('utc-offset')) : 0;
+		utcOffset = isNaN(utcOffset) ? 0 : utcOffset;
 		
 		// Wrap the input, and hide it from display.
 		input.wrap('<div class="calendar"></div>');
@@ -173,7 +179,8 @@ $.fcdp = {
 			timePicker: hasTimePicker ? cal.find('.time-picker') : null,
 			nullable: nullable,
 			clearButton: nullable ? cal.find('a.clear') : null,
-			input: input
+			input: input,
+			utcOffset: utcOffset
 		};
 		
 		cal.data('opts', opts);		
@@ -387,6 +394,7 @@ $.fcdp = {
 
 			var wDate = this.getWorkingDate(opts);
 			var newDate = new Date(wDate.getFullYear(), wDate.getMonth(), wDate.getDate(), hour, minute, second);
+			newDate = newDate ? newDate.add(-opts.utcOffset).hours() : newDate;
 			this.setFieldDate(opts, newDate);
 
 		}
