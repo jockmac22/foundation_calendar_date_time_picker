@@ -3,6 +3,9 @@ Calendar
 
 __A date and time picker for the Foundation CSS framework.__
 
+## Change Log
+
+- 2/6/2014 -> Added a UTC offset calculation option that calculates the display time with an offset from UTC, and then stores the selected values as the properly calculated UTC time.
 
 ##License
 
