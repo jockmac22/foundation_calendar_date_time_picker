@@ -23,7 +23,7 @@ $.fcdp = {
 	 ***/
 	getDateFromString: function(str, nullable) {
 		nullable = nullable || true;
-		return (!str && !nullable) ? null : (!str ? new Date() : new Date(str));;		
+		return (!str && !nullable) ? null : (!str ? new Date() : new Date.parse(str));;		
 	},
 	
 	moveMonth: function(date, months) {
