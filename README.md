@@ -5,6 +5,7 @@ __A date and time picker for the Foundation CSS framework.__
 
 ## Change Log
 
+- 3/5/2014 -> Added event triggers to the date and time picker, added a fixed display state for the calendar and updated the index.html docs.
 - 2/13/2014 -> Fixed an issue with FF/Safari dates not parsing correctly.  (Thank you Date.js)
 - 2/6/2014 -> Added a UTC offset calculation option that calculates the display time with an offset from UTC, and then stores the selected values as the properly calculated UTC time.
 
