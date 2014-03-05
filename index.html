@@ -11,6 +11,13 @@
 	
 	<!-- Make sure you have jQuery, date.js loading properly -->
 	<script type="text/javascript" src="js/jquery.js" ></script>
+	<script type="text/javascript" src="foundation/foundation.min.js" ></script>
+	<script type="text/javascript">
+	$(document).ready(function() {
+		$(document).foundation();
+	});
+	</script>
+	
 	<script type="text/javascript" src="js/date.js" ></script>
 	
 	<!-- Add the foundation calendar Javascript -->
@@ -36,19 +43,63 @@
 	</style>
 </head>
 <body>
+	<div class="fixed">
+		<nav class="top-bar" data-topbar>
+			<ul class="title-area">
+				<li class="name">
+					<h1><a href="#"><i class="fi-calendar"></i> Calendar</a></h1>
+				</li>
+			</ul>
+
+			<section class="top-bar-section">
+				<!-- Left Nav Section -->
+				<ul class="left">
+					<li class="has-dropdown">
+						<a href="#basicsetup">Basic Setup</a>
+						<ul class="dropdown">
+							<li><a href="#datetime">Date & Time</a></li>
+							<li><a href="#date">Date</a></li>
+							<li><a href="#time">Time</a></li>
+						</ul>
+					</li>
+					<li class="has-dropdown">
+						<a href="#displayformats">Display Formats</a>
+						<ul class="dropdown">
+							<li><a href="#dateformat">Date Format</a></li>
+							<li><a href="#timeformat">Time Format</a></li>
+						</ul>
+					</li>
+					<li class="has-dropdown">
+						<a href="#values">Values</a>
+						<ul class="dropdown">
+							<li><a href="#intialvalue">Initial Value</a></li>
+							<li><a href="#valueformat">Value Format</a></li>
+							<li><a href="#utcoffset">UTC Offset</a></li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+		</nav>
+	</div>
+	
+	<a name="basicsetup"></a>
 	<div class="row">
 		<div class="small-12 columns">
-			<h1>Calendar <small class="show-for-large-only">A date and time picker for the Foundation CSS framework</small></h1>
+			<h1><i class="fi-calendar"></i> Calendar <small class="show-for-large-only" style="margin-top:20px;">A date and time picker for the Foundation CSS framework</small></h1>
 			<p class="hide-for-large-only">A date and time picker for the Foundation CSS framework</p>
 		</div>
 	</div>
-
+	
+	<a name="datetime"></a>
 	<div class="row">
 		<div class="small-12 columns">
-			<h2 class="header">Basic Setup</h2>
+			
+			<h3 class="header" data-magellan-destination="basicsetup">Basic Setup</h3>
 		</div>
 	</div>
-
+	
+	
+	<a name="date"></a>
 	<div class="row">
 		<div class="medium-12 large-8 columns">
 			<h3>Date & Time</h3>
@@ -66,6 +117,9 @@
 			</code>
 		</div>
 	</div>
+	
+
+	<a name="time"></a>
 	<div class="row">
 		<div class="medium-12 large-8 columns large-offset-2">
 			<h3>Date Only</h3>
@@ -84,6 +138,8 @@
 			</code>
 		</div>
 	</div>
+	
+	<a name="displayformats"></a>
 	<div class="row">
 		<div class="medium-12 large-8 columns large-offset-4">
 			<h3>Time Only</h3>
@@ -104,9 +160,11 @@
 		
 	</div>
 
+	<a name="dateformat"></a>
 	<div class="row">
 		<div class="small-12 columns">
-			<h2 class="header">Display Formats</h2>
+			<a name="displayformats"></a>
+			<h3 class="header" data-magellan-destination="displayformats">Display Formats</h3>
 			
 			<p>The display format strings are based on a modified set of the Ruby 'strftime' formatting conventions.  <a href="http://apidock.com/ruby/DateTime/strftime" target="_blank">Here's a list of the formatting options.</a></p>
 			
@@ -114,6 +172,7 @@
 		</div>
 	</div>
 
+	<a name="timeformat"></a>
 	<div class="row">
 		<div class="medium-12 large-8 columns">
 			<h3>Date Format</h3>
@@ -132,6 +191,7 @@
 		</div>
 	</div>
 
+	<a name="values"></a>
 	<div class="row">
 		<div class="medium-12 large-8 columns  large-offset-4">
 			<h3>Time Format</h3>
@@ -150,7 +210,7 @@
 		</div>
 	</div>
 
-
+	<a name="initialvalue"></a>
 	<div class="row">
 		<div class="small-12 columns">
 			<h2 class="header">Values</h2>
@@ -159,6 +219,7 @@
 		</div>
 	</div>
 
+	<a name="valueformat"></a>
 	<div class="row">
 		<div class="medium-12 large-8 columns">
 			<h3>Initial Value</h3>
@@ -178,7 +239,7 @@
 		</div>
 	</div>
 
-
+	<a name="allownullblank"></a>
 	<div class="row">
 		<div class="medium-12 large-8 columns large-offset-2">
 			<h3>Value Format</h3>
@@ -198,6 +259,7 @@
 		</div>
 	</div>
 
+	<a name="utcoffset"></a>
 	<div class="row">
 		<div class="medium-12 large-8 columns large-offset-4">
 			<h3>Allow Null/Blank Values</h3>
@@ -228,7 +290,8 @@
 			</code>
 		</div>
 	</div>
-
+	
+	<a name="fixeddisplays"></a>
 	<div class="row">
 		<div class="medium-12 large-8 columns">
 			<h3>UTC Offset</h3>
@@ -266,6 +329,112 @@
 		</div>
 	</div>
 
+	<a name="fixedcalendar"></a>
+	<div class="row">
+		<div class="small-12 columns">
+			<h2 class="header">Fixed Displays</h2>
+			<p>If you want the calendar or time picker to display as the UI itself, then you can append the data-fixed parameter to the input.</p>
 
+		</div>
+	</div>
+	
+	<a name="events"></a>
+	<div class="row">
+		<div class="medium-12 large-8 columns">
+			<h3>Fixed Calendar</h3>
+			<p>The calendar can be used as the UI element by specifying the fixed-calendar parameter in the input field:</p>
+
+			<div class="row">
+				<div class="small-12 medium-6 large-6 columns">
+					<input type="text" data-date data-fixed />
+				</div>
+			</div>
+			
+			<label>Code:</label>
+			<code>
+					&lt;input type="text" data-date data-fixed /&gt;
+			</code>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="small-12 columns">
+			<h2 class="header">Events</h2>
+			<p>If you want to trigger your own custom javascript when the date/time pickers are manipulated you can bind events to the date input to respond accordingly.</p>
+			
+			<p>The date/time picker below is wired up to respond to the following events:</p>
+			
+			<h5>Date Events</h5>
+			<dl>
+				<dt>monthChange</dt>
+				<dd>Triggered when a month is changed to previous or next</dd>
+				<dt>monthPrev</dt>
+				<dd>Triggered when the previous month is selected</dd>
+				<dt>monthNext</dt>
+				<dd>Triggered when the next month is selected</dd>
+				<dt>dateChange</dt>
+				<dd>Triggered when the specific date is changed</dd>
+			</dl>
+
+			<h5>Time Events</h5>
+			<dl>
+				<dt>timeChange</dt>
+				<dd>Triggered when the time is changed.</dd>
+			</dl>
+
+			<p>Here's the code that implements the date/time picker (Check the console for output)</p>
+			
+			<code>
+				&lt;input id="eventCalendar" type="text" data-date-time /&gt;
+			</code>
+			
+			<input id="eventCalendar" type="text" data-date-time />
+			
+			<p>We can wire up the events with code similar to the following implementation:</p>
+			
+			<code>
+				<pre>
+				$(document).ready(function() {
+					$('#eventCalendar').bind('monthChange', function(evt, opts) {
+						console.info('monthChange triggered');
+						console.info(opts);
+					});
+				});
+				</pre>
+			</code>
+			
+			<script type="text/javascript">
+				$(document).ready(function(evt) {
+					var eventCal = $('#eventCalendar');
+					
+					eventCal.bind('monthChange', function(evt, opts) {
+						console.info('monthChange triggered');
+						console.info(opts);
+					});
+					
+					eventCal.bind('monthPrev', function(evt, opts) {
+						console.info('monthPrev triggered');
+						console.info(opts);
+					});
+					
+					eventCal.bind('monthNext', function(evt, opts) {
+						console.info('monthNext triggered');
+						console.info(opts);
+					});
+					
+					eventCal.bind('dateChange', function(evt, opts) {
+						console.info('dateChange triggered');
+						console.info(opts);
+					});
+					
+					eventCal.bind('timeChange', function(evt, opts) {
+						console.info('timeChange triggered');
+						console.info(opts);
+					});
+					
+				});
+			</script>
+		</div>
+	</div>
 </body>
 </head>

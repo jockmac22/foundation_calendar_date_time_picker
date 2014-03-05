@@ -13,7 +13,7 @@ $.fcdp = {
 		
 		// Wireup the body to hide display elements when clicked.
 		$(document).click(function(evt) {
-			$('.calendar').find('.date-picker').hide();
+			$('.calendar').not('.fixed').find('.date-picker').hide();
 			$('.calendar').find('.time-picker').hide();
 		});		
 	},
@@ -103,6 +103,8 @@ $.fcdp = {
 		// Determine which display elements are present.
 		var hasTimePicker = (input.is('[data-time]') || input.is('[data-date-time]')) ? true : false
 		var hasDatePicker = (input.is('[data-date]') || input.is('[data-date-time]')) ? true : !hasTimePicker;
+		var isFixed = input.is('[data-fixed]') ? true : false;
+		
 		var nullable = input.is('[data-nullable]');
 		var utcOffset = input.is('[data-utc-offset]') ? parseInt(input.data('utc-offset')) : 0;
 		utcOffset = isNaN(utcOffset) ? 0 : utcOffset;
@@ -113,16 +115,21 @@ $.fcdp = {
 		input.addClass('value');
 		
 		var cal = input.closest('.calendar');
+		if (isFixed) {
+			cal.addClass('fixed');
+		}
 		
 		// Generate the date/time selector container.
 		var sel = $('<div class="selector"></div>');
 		
 		// If there's a date picker, generate its display.
 		if (hasDatePicker) {
-			var ds = $('<a class="date-selector"></a>');
-			ds.append('<i class="fi-calendar"></i><span class="value"></span>');
-			sel.append(ds);			
-			sel.addClass('date');
+			if (!isFixed) {
+				var ds = $('<a class="date-selector"></a>');
+				ds.append('<i class="fi-calendar"></i><span class="value"></span>');
+				sel.append(ds);			
+				sel.addClass('date');
+			}
 			
 			var dp = $('<div class="date-picker"></div>');
 			cal.append(dp);
@@ -135,7 +142,7 @@ $.fcdp = {
 		}
 
 		// If there's a time picker, generate its display.
-		if (hasTimePicker) {
+		if (hasTimePicker && !isFixed) {
 			var ts = $('<a class="time-selector"></a>');
 			ts.append('<i class="fi-clock"></i><span class="value"></span>');
 			sel.append(ts);	
@@ -396,7 +403,8 @@ $.fcdp = {
 			var newDate = new Date(wDate.getFullYear(), wDate.getMonth(), wDate.getDate(), hour, minute, second);
 			newDate = newDate ? newDate.add(-opts.utcOffset).hours() : newDate;
 			this.setFieldDate(opts, newDate);
-
+			
+			opts.input.trigger('timeChange', [opts]);
 		}
 	},
 	
@@ -484,6 +492,9 @@ $.fcdp = {
 				var prevMonth = $.fcdp.moveMonth($.fcdp.getWorkingDate(opts), -1);
 				$.fcdp.setWorkingDate(opts, prevMonth);
 				$.fcdp.buildCalendar(opts);
+				
+				opts.input.trigger('monthChange', [opts]);
+				opts.input.trigger('monthPrev', [opts]);
 			});
 
 			dp.find('a.month-nav.next').click(function(evt) {
@@ -493,6 +504,9 @@ $.fcdp = {
 				var nextMonth = $.fcdp.moveMonth($.fcdp.getWorkingDate(opts), 1);
 				$.fcdp.setWorkingDate(opts, nextMonth);
 				$.fcdp.buildCalendar(opts);
+
+				opts.input.trigger('monthChange', [opts]);
+				opts.input.trigger('monthNext', [opts]);
 			});
 
 			dp.find('a.day').click(function(evt) {
@@ -508,6 +522,8 @@ $.fcdp = {
 
 				var newDate = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate(), fieldDate.getHours(), fieldDate.getMinutes(), fieldDate.getSeconds());
 				$.fcdp.setFieldDate(opts, newDate);
+				
+				opts.input.trigger('dateChange', [opts]);
 			});
 		}
 	},

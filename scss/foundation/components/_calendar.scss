@@ -26,13 +26,22 @@ $label-height:				23px;
 $label-padding:				5px;
 $label-font-size:			11px;
 
-$day-font_size: 			14px;
 $day-background:			#FFF;
 $day-foreground:			$primary-color;
 $day-border:				1px solid #FFF; 
 $day-padding:				3px;
-$day-width:					$day-font-size * 2.25;
-$day-height:				$day-font-size * 1.5;
+
+$small-day-font-size: 		22px;
+$small-date-picker-width:	100%;
+$small-day-height:			$small-day-font-size * 2.25;
+
+$medium-day-font-size:		18px;
+$medium-date-picker-width:	75%;
+$medium-day-height:			$medium-day-font-size * 2.25;
+
+$large-day-font-size:		16px;
+$large-date-picker-width:	50%;
+$large-day-height:			$large-day-font-size * 2.25;
 
 $hover-border:				1px solid $primary-color;
 $hover-weekend-border:		$hover-border;
@@ -205,7 +214,7 @@ $current-border:			1px solid $warning-color;
 		left: 0;
 		display: none;
 		border: $date-picker-border;
-		width: auto;
+		width: $large-date-picker-width;
 		height: auto;
 		background: #FFF;
 		z-index: 10000;
@@ -281,8 +290,8 @@ $current-border:			1px solid $warning-color;
 		
 		.week {
 			display: block;
-			width: auto;
-			height: auto;
+			width: 100%;
+			height: $large-day-height;
 			white-space: no-wrap;
 			margin: 0;
 			padding: 0;
@@ -291,14 +300,15 @@ $current-border:			1px solid $warning-color;
 			.day {
 				display: inline-block;
 				text-align: center;
-				font-size: $day_font_size;
+				font-size: $large-day-font-size;
 				background: $day_background;
 				color: $day_foreground;
 				border: 1px solid #FFF;
 				vertical-align: middle;
 				padding: $day-padding;
-				width: $day-width;
-				height: $day-height;
+				width: (1 / 7) * 100%;
+				height: $large-day-height;
+				line-height: $large-day-height - 7px;
 				
 				&.weekend {
 					background: $weekend-background;
@@ -339,15 +349,62 @@ $current-border:			1px solid $warning-color;
 			}
 			
 			&.labels {
+				height: $label-height;
+				
 				.day {
 					background: $label-background;
 					color: $label-foreground;
 					border: $label-border;
 					height: $label-height;
+					line-height: $label-height - 10px;
 					padding: $label-padding;
 					font-size: $label-font-size;
 				}
 			}
-		}	
+		}
 	}
+	
+	&.fixed {
+		z-index: 0;
+					
+		.date-picker {
+			display: block;
+			position: relative;
+			width: 100%;
+
+		}
+	}
+	
+	@media #{$small-only} {
+		.date-picker {
+			width: $small-date-picker-width;
+			
+			.week {
+				height: $small-day-height;
+				
+				.day {
+					height: $small-day-height;
+					line-height: $small-day-height - 7px;
+					font-size: $small-day-font-size;
+				}
+			}
+		}
+	}
+
+	@media #{$medium-only} {
+		.date-picker {
+			width: $medium-date-picker-width;
+			
+			.week {
+				height: $medium-day-height;
+				line-height: $medium-day-height - 7px;
+				
+				.day {
+					height: $medium-day-height;
+					font-size: $medium-day-font-size;
+				}
+			}
+		}
+	}
+
 }
