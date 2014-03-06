@@ -37,7 +37,7 @@ THE SOFTWARE.
 
 Noting that the Foundation CSS Framework was lacking in the world of date and time picking, this project is an attempt to make the date and time picking process smoother and more considerate of the needs of both the user and the backend data handling system.
 
-Having used the Date/Time picker for other frameworks, and noting that Foundation really only had one option that seemed functional, I decided to create one from the grond up. 
+Having used the Date/Time picker for other frameworks, and noting that Foundation really only had one option that seemed functional, I decided to create one from the ground up. 
 
 The most popular option out there has one issue that was always difficult to get over: __the input field was used as the display field__.  
 
