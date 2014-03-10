@@ -40,6 +40,19 @@
 	.header {
 		border-bottom: 1px solid #333;
 	}
+	
+	dl dt {
+		display: inline-block;
+		width: 18%;
+		margin-right: 1%;
+		vertical-align: top;
+	}
+	
+	dl dd {
+		display: inline-block;
+		width: 79%;
+		vertical-align: top;
+	}
 	</style>
 </head>
 <body>
@@ -77,6 +90,35 @@
 							<li><a href="#utcoffset">UTC Offset</a></li>
 						</ul>
 					</li>
+
+					<li class="has-dropdown">
+						<a href="#fixeddisplays">Fixed Displays</a>
+						<ul class="dropdown">
+							<li><a href="#fixedcalendar">Fixed Calendar</a></li>
+						</ul>
+					</li>
+					
+					<li class="has-dropdown">
+						<a href="#events">Events</a>
+						<ul class="dropdown">
+							<li><a href="#events">monthChange</a></li>
+							<li><a href="#events">monthPrev</a></li>
+							<li><a href="#events">monthNext</a></li>
+							<li><a href="#events">dateChange</a></li>
+							<li><a href="#events">timeChange</a></li>
+						</ul>
+					</li>
+					
+					<li class="has-dropdown">
+						<a href="#customizebehaviors">Customize Behaviors</a>
+						<ul class="dropdown">
+							<li><a href="#dateisclickable">dateIsClickable</a></li>
+							<li><a href="#buildothermonthdayui">buildOtherMonthDayUI</a></li>
+							<li><a href="#builddayui">buildDayUI</a></li>
+						</ul>
+					</li>
+					
+					
 				</ul>
 			</section>
 		</nav>
@@ -357,6 +399,7 @@
 		</div>
 	</div>
 	
+	
 	<div class="row">
 		<div class="small-12 columns">
 			<h2 class="header">Events</h2>
@@ -381,7 +424,9 @@
 				<dt>timeChange</dt>
 				<dd>Triggered when the time is changed.</dd>
 			</dl>
-
+			
+			<a name="customizebehaviors"></a>
+			
 			<p>Here's the code that implements the date/time picker (Check the console for output)</p>
 			
 			<code>
@@ -394,12 +439,12 @@
 			
 			<code>
 				<pre>
-				$(document).ready(function() {
-					$('#eventCalendar').bind('monthChange', function(evt, opts) {
-						console.info('monthChange triggered');
-						console.info(opts);
-					});
-				});
+$(document).ready(function() {
+	$('#eventCalendar').bind('monthChange', function(evt, opts) {
+		console.info('monthChange triggered');
+		console.info(opts);
+	});
+});
 				</pre>
 			</code>
 			
@@ -436,5 +481,201 @@
 			</script>
 		</div>
 	</div>
+	
+	<a name="dateisclickable"></a>
+	<div class="row">
+		<div class="small-12 columns">
+			<h2 class="header">Customized Behaviors</h2>
+			<p>If you want to customize how the calendar is drawn, you can override the calendar behaviors to generate different displays.</p>
+			
+			<p>Customized behaviors are implemented by adding methods to the <strong>$.fcdp.functions</strong> property.  This property is checked at various stages of the calendar's build cycle, and if certain methods are present, will actuate them which allows you to modify its behavior.</p>
+			
+			<p>All customized behavior methods are passed the 'opts' object which contains references to all the moving parts of the calendar implementation.  Use console.info(opts) to get a better detail on the values that are passed along with this object.</p>
+		</div>
+	</div>
+	
+	<a name="buildothermonthdayui"></a>
+	<div class="row">
+		<div class="medium-12 large-8 columns">
+			<h3>dateIsClickable</h3>
+			<code>$.fcdp.functions.dateIsClickable = function(opts, day_opts) { ... }</code><br /><br />
+			<dl>
+				<dt>opts</dt>
+				<dd>The list of options set for the given calendar object.</dd>
+				<dt>day_opts</dt>
+				<dd>This list of options set for the current day in the calendar build cycle. If you output the contents of this object to the console, you will see the values provided.</dd>
+				<dt><i>returns</i></dt>
+				<dd>A boolean value indicating if the date should be clickable or not</dd>
+			</dl>
+			<p>This method allows you to modify whether or not an individual day in the week is presented as clickable or not.</p>
+
+			<p>The example code below makes all weekend days not clickable</p>
+
+			<div class="row">
+				<div class="small-12 medium-8 large-12 columns medium-centered">
+					<input id="dateIsClickable" type="text" data-date-time data-fixed />
+				</div>
+			</div>
+			
+			<label>Code:</label>
+			<pre><code>
+&lt;script type="text/javascript"&gt;
+	$.fcdp.functions.dateIsClickable = function(opts, day_opts) {
+		// Check to see if we are rendering the dateIsClickable calendar input
+		if (opts.input.is("#dateIsClickable")) {
+			return !day_opts.is_weekend;
+		}
+	
+		// By default return TRUE for all other calendar build cycles.
+		return true;
+	};
+&lt;/script&gt;
+			</code></pre>
+			
+			<script type="text/javascript">
+				$.fcdp.functions.dateIsClickable = function(opts, day_opts) {
+					// Check to see if we are rendering the dateIsClickable calendar input
+					if (opts.input.is("#dateIsClickable")) {
+						return !day_opts.is_weekend;
+					}
+					
+					// By default return TRUE for all other calendar build cycles.
+					return true;
+				};
+			</script>
+		</div>
+	</div>
+	
+	<a name="builddayui"></a>
+	<div class="row">
+		<div class="medium-12 large-8 columns large-offset-2">
+			<h3>buildOtherMonthDayUI</h3>
+			<code>$.fcdp.functions.buildOtherMonthDayUI = function(opts, day_opts) { ... }</code><br /><br />
+			<dl>
+				<dt>opts</dt>
+				<dd>The list of options set for the given calendar object.</dd>
+				<dt>day_opts</dt>
+				<dd>This list of options set for the current day in the calendar build cycle. If you output the contents of this object to the console, you will see the values provided.</dd>
+				<dt><i>returns</i></dt>
+				<dd>A string or jQuery selector containing the HTML content to be rendered.</dd>
+			</dl>
+			<p>This method allows you to modify how days from the previous or following month are rendered to the the display.</p>
+
+			<p>The example code below displays all of the days from the previous and next month without their numbers.</p>
+
+
+			<div class="row">
+				<div class="small-12 medium-8 large-12 columns medium-centered">
+					<input id="buildOtherMonthDayUI" type="text" data-date-time data-fixed />
+				</div>
+			</div>
+			
+			<label>Code:</label>
+			<pre><code>
+&lt;script type="text/javascript"&gt;
+	$.fcdp.functions.buildOtherMonthDayUI = function(opts, day_opts) {
+		// Check to see if we are rendering the dateIsClickable calendar input
+		if (opts.input.is("#buildOtherMonthDayUI")) {
+			var clazz = "day other-month" + (day_opts.is_weekend ? " weekend" : "");
+			return '&lt;div class="' + clazz + '"&gt;&lt;/div&gt;';
+		}
+	
+		// Return false to engage default rendering for the other calendars.
+		return false;
+	};
+&lt;/script&gt;
+			</code></pre>
+			
+			<script type="text/javascript">
+				$.fcdp.functions.buildOtherMonthDayUI = function(opts, day_opts) {
+					// Check to see if we are rendering the dateIsClickable calendar input
+					if (opts.input.is("#buildOtherMonthDayUI")) {
+						var clazz = "day other-month" + (day_opts.is_weekend ? " weekend" : "");
+						return '<div class="' + clazz + '"></div>';
+					}
+					
+					// Return false to engage default rendering for the other calendars.
+					return false;
+				};
+			</script>
+			
+		</div>
+	</div>
+	
+	<a name=""></a>
+	<div class="row">
+		<div class="medium-12 large-8 columns large-offset-4">
+			<h3>buildDayUI</h3>
+			<code>$.fcdp.functions.buildDayUI = function(opts, day_opts) { ... }</code><br /><br />
+			<dl>
+				<dt>opts</dt>
+				<dd>The list of options set for the given calendar object.</dd>
+				<dt>day_opts</dt>
+				<dd>This list of options set for the current day in the calendar build cycle. If you output the contents of this object to the console, you will see the values provided.</dd>
+				<dt><i>returns</i></dt>
+				<dd>A string or jQuery selector containing the HTML content to be rendered.</dd>
+			</dl>
+			<p>This method allows you to modify how days from the current month are rendered to the the display.</p>
+
+			<p>The example code below replaces the numbers for Wednesday with a star icon.</p>
+
+
+			<div class="row">
+				<div class="small-12 medium-8 large-12 columns medium-centered">
+					<input id="buildDayUI" type="text" data-date-time data-fixed />
+				</div>
+			</div>
+			
+			<script type="text/javascript">
+				$.fcdp.functions.buildDayUI = function(opts, day_opts) {
+					// Check to see if we are rendering the dateIsClickable calendar input
+					if (opts.input.is("#buildDayUI")) {
+						var clazz = "day" + (day_opts.is_weekend ? " weekend" : "") + (day_opts.is_current ? " current" : "");
+						var day_content = (day_opts.weekday_num == 3 ? '<i class="fi-star"></i>' : day_opts.day_number);
+						var response = false;
+						
+						if (day_opts.is_clickable) {
+							response = '<a href="#' + day_opts.day_number + '" class="' + clazz + '" data-date="' + day_opts.date.format() + '">' + day_content + '</a>';
+						} else {
+							response = '<span class="' + clazz + '" data-date="' + day_opts.date.format() + '">' + day_content + '</span>';
+						}
+						
+						return response;
+					}
+					
+					// Return false to engage default rendering for the other calendars.
+					return false;
+				};
+			</script>
+			
+			
+			<label>Code:</label>
+			<pre><code>
+			<code>
+&lt;script type="text/javascript"&gt;
+	$.fcdp.functions.buildDayUI = function(opts, day_opts) {
+		// Check to see if we are rendering the dateIsClickable calendar input
+		if (opts.input.is("#buildDayUI")) {
+			var clazz = "day" + (day_opts.is_weekend ? " weekend" : "") + (day_opts.is_current ? " current" : "");
+			var day_content = (day_opts.weekday_num == 3 ? '<i class="fi-star"></i>' : day_opts.day_number);
+			var response = false;
+		
+			if (day_opts.is_clickable) {
+				response = '&lt;a href="#' + day_opts.day_number + '" class="' + clazz + '" data-date="' + day_opts.date.format() + '"&gt;' + day_content + '&lt;/a&gt;';
+			} else {
+				response = '&lt;span class="' + clazz + '" data-date="' + day_opts.date.format() + '"&gt;' + day_content + '&lt;/span&gt;';
+			}
+		
+			return response;
+		}
+	
+		// Return false to engage default rendering for the other calendars.
+		return false;
+	};
+&lt;/script&gt;
+			</code></pre>
+		</div>
+	</div>
+	
 </body>
 </head>

@@ -58,10 +58,12 @@ $other-weekend-foreground:	#BBB;
 $other-weekend-background:	$weekend-background;
 $other-weekend-border:		$weekend-border;
 
-
 $current-background:		$warning-color;
 $current-foreground:		#FFF;
 $current-border:			1px solid $warning-color;
+
+$non-clickable-foreground:	#CCC;
+$non-clickable-weekend-foreground: #CCC;
  
 .calendar {
 	margin: 0;
@@ -336,6 +338,13 @@ $current-border:			1px solid $warning-color;
 				}
 			}
 			
+			span.day {
+				color: $non-clickable-foreground;
+				
+				&.weekend {
+					color: $non-clickable-weekend-foreground;
+				}
+			}
 
 			
 			a.day {
@@ -371,7 +380,6 @@ $current-border:			1px solid $warning-color;
 			display: block;
 			position: relative;
 			width: 100%;
-
 		}
 	}
 	

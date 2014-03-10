@@ -1,7 +1,7 @@
 /*
 Foundation Calendar Date Picker - Jocko MacGregor
 
-Source available at: github.com
+Source available at: https://github.com/jockmac22/foundation_calendar_date_time_picker
 
 Original Source Credit: Robert J. Patrick (rpatrick@mit.edu)
 */
@@ -107,6 +107,9 @@ $.fcdp = {
 		
 		var nullable = input.is('[data-nullable]');
 		var utcOffset = input.is('[data-utc-offset]') ? parseInt(input.data('utc-offset')) : 0;
+		var minDate = input.is('[data-min-date]') ? this.getDateFromString(input.data('min-date')) : null;
+		var maxDate = input.is('[data-max-date]') ? this.getDateFromString(input.data('max-date')) : null;
+		
 		utcOffset = isNaN(utcOffset) ? 0 : utcOffset;
 		
 		// Wrap the input, and hide it from display.
@@ -187,7 +190,9 @@ $.fcdp = {
 			nullable: nullable,
 			clearButton: nullable ? cal.find('a.clear') : null,
 			input: input,
-			utcOffset: utcOffset
+			utcOffset: utcOffset,
+			minDate: minDate,
+			maxDate: maxDate
 		};
 		
 		cal.data('opts', opts);		
@@ -414,7 +419,6 @@ $.fcdp = {
 			dp.empty();
 		
 			var workingDate = this.getWorkingDate(opts);
-			console.info(workingDate);
 			var fieldDate = this.getFieldDate(opts);
 			fieldDate = fieldDate ? fieldDate : new Date();
 			
@@ -443,36 +447,37 @@ $.fcdp = {
 			// Iterate the maximum 6 weeks of days (6 is the maximum number of weeks
 			// on a calendar for any given month).
 			for (i = 0; i < 42; i++) {
-				var week_day_num = i % 7;
-				var weekend = (week_day_num == 0) || (week_day_num == 6) ? " weekend" : "";
-				var day_num = ""
-				var clazz = "day"
-			
+				var weekday_num = i % 7;
+				
+				var day_opts = {
+					date: null,
+					weekday_num: weekday_num,
+					is_weekend: (weekday_num == 0) || (weekday_num == 6),
+					is_current: (fieldDate.format('%Y%m%d') == date.format('%Y%m%d')),
+					day_number: 0
+				}
+				
 				// If i is outside of the starting pos and the days in the
 				// month, then we are in another month, so generate a non-link
 				// display
 				if (i < startingPos || i >= days) {
-					clazz += ' other-month' + weekend;
-					var day_num = ""
 					if (i < startingPos) {
-						day_num = "" + ((daysInPreviousMonth - (startingPos-1)) + i);
+						day_opts.day_number = ((daysInPreviousMonth - (startingPos-1)) + i);
 					} else if (i >= days) {
-						day_num = "" + (i - days + 1);
+						day_opts.day_number = (i - days + 1);
 					}
-					week.append('<div class="' + clazz + '">' + day_num + '</div>');
-				
+					
+					week.append(this.buildOtherMonthDayUI(opts, day_opts));
 				// Otherwise we are in the month, so generate a numbered link display.
 				} else {
-					var day_num = i - startingPos + 1;
-					var link_date = new Date(parts.year, parts.month, day_num, parts.hour, parts.minute, parts.second);
-					var current = (fieldDate.format('%Y%m%d') == link_date.format('%Y%m%d')) ? " current" : "";
-					clazz += weekend + current;
-					week.append('<a href="#' + day_num + '" class="' + clazz + '" data-date="' + link_date.format() + '">' + day_num + '</a>');
+					day_opts.day_number = i - startingPos + 1;
+					day_opts.date = new Date(parts.year, parts.month, day_opts.day_number, parts.hour, parts.minute, parts.second);
+					week.append(this.buildDayUI(opts, day_opts));
 				}
 			
 				// If we're at the end of the week, append the week to the display, and
 				// generate a new week
-				if (week_day_num == 6) {
+				if (weekday_num == 6) {
 					dp.append(week);
 					week = $('<div class="week"></div>');
 				}
@@ -480,6 +485,54 @@ $.fcdp = {
 		
 			this.wireupCalendar(opts);
 		}
+	},
+	
+	buildOtherMonthDayUI: function(opts, day_opts) {
+		if ($.isFunction(this.functions.buildOtherMonthDayUI)) {
+			response = this.functions.buildOtherMonthDayUI(opts, day_opts);
+		} 
+		
+		// If no response from the custom method, generate the default response.
+		if (!response) {
+			var clazz = "day other-month" + (day_opts.is_weekend ? " weekend" : "");
+			response = '<div class="' + clazz + '">' + day_opts.day_number + '</div>';
+		}
+		
+		return response;
+	},
+	
+	buildDayUI: function(opts, day_opts) {
+		day_opts.is_clickable = this.dateIsClickable(opts, day_opts);
+		var day_num = day_opts.date.getDate();
+		var response = false;
+		
+		if ($.isFunction(this.functions.buildDayUI)) {
+			response = this.functions.buildDayUI(opts, day_opts);
+		}
+		
+		// If no response from the custom method, generate the default response.
+		if (!response) {
+			var clazz = "day" + (day_opts.is_weekend ? " weekend" : "") + (day_opts.is_current ? " current" : "");
+			if (day_opts.is_clickable) {
+				response = '<a href="#' + day_num + '" class="' + clazz + '" data-date="' + day_opts.date.format() + '">' + day_num + '</a>';
+			} else {
+				response = '<span class="' + clazz + '" data-date="' + day_opts.date.format() + '">' + day_num + '</span>';
+			}
+		}
+		
+		return response;
+	},
+	
+	dateIsClickable: function(opts, day_opts) {
+		if ((opts.minDate && day_opts.date < opts.minDate) || (opts.maxDate && day_opts.date > opts.maxDate)) {
+			return false;
+		} 
+		
+		if ($.isFunction(this.functions.dateIsClickable)) {
+			return this.functions.dateIsClickable(opts, day_opts);
+		}
+		
+		return true;
 	},
 	
 	wireupCalendar: function(opts) {
@@ -527,6 +580,8 @@ $.fcdp = {
 			});
 		}
 	},
+	
+	functions: {}
 }
 
 $(document).ready(function() { $.fcdp.init(); });
