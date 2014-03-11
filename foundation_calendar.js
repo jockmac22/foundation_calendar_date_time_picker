@@ -5,6 +5,20 @@ Source available at: https://github.com/jockmac22/foundation_calendar_date_time_
 
 Original Source Credit: Robert J. Patrick (rpatrick@mit.edu)
 */
+
+$.fn.fcdp = function(opts, p1, p2) {
+	var type = $.type(opts);
+	if (type == 'object') {
+		$(this).each(function() {
+			$.fcdp.buildUI($(this), opts);
+		});
+	} else if (type == 'string') {
+		$(this).each(function() {
+			$.fcdp.execute($(this), opts, p1, p2);
+		});
+	}
+}
+
 $.fcdp = {
 	init: function() {
 		$('input[data-date-time]').add($('input[data-date]')).add($('input[data-time]')).each(function() {
@@ -98,36 +112,60 @@ $.fcdp = {
 	/***
 		UI Construction and Event Handling
 	 ***/
-	buildUI: function(input) {
-		
-		// Determine which display elements are present.
-		var hasTimePicker = (input.is('[data-time]') || input.is('[data-date-time]')) ? true : false
-		var hasDatePicker = (input.is('[data-date]') || input.is('[data-date-time]')) ? true : !hasTimePicker;
-		var isFixed = input.is('[data-fixed]') ? true : false;
-		
-		var nullable = input.is('[data-nullable]');
-		var utcOffset = input.is('[data-utc-offset]') ? parseInt(input.data('utc-offset')) : 0;
-		var minDate = input.is('[data-min-date]') ? this.getDateFromString(input.data('min-date')) : null;
-		var maxDate = input.is('[data-max-date]') ? this.getDateFromString(input.data('max-date')) : null;
-		
-		utcOffset = isNaN(utcOffset) ? 0 : utcOffset;
-		
+	buildUI: function(input, opts) {
 		// Wrap the input, and hide it from display.
 		input.wrap('<div class="calendar"></div>');
 		input.wrap('<div class="hidden"></div>');
 		input.addClass('value');
 		
+		// Generate the calendar container
 		var cal = input.closest('.calendar');
-		if (isFixed) {
+		
+		// Generate the date/time selector container and add it to the calendar
+		var sel = $('<div class="selector"></div>');
+		cal.append(sel);
+		
+		// Set UTC offset from the unobtrusive javascript
+		var utcOffset = input.is('[data-utc-offset]') ? parseInt(input.data('utc-offset')) : 0;
+		utcOffset = isNaN(utcOffset) ? 0 : utcOffset;
+		
+		// Determine if the time and datepicker states
+		var hasTimePicker = (input.is('[data-time]') || input.is('[data-date-time]')) ? true : false;
+		var hasDatePicker = (input.is('[data-date]') || input.is('[data-date-time]')) ? true : !hasTimePicker;
+		
+		// Establish a default set of options for the calendar based on unobtrusive tags in the
+		// input field.
+		var c_opts = {
+			input: input,
+			calendar: cal,
+			formats: {
+				'date': input.is('[data-date-format]') ? input.data('date-format') : '%A: %B %-d, %Y',
+				'time': input.is('[data-time-format]') ? input.data('time-format') : '%-I:%M %p',
+				'value': input.is('[data-value-format]') ? input.data('value-format') : '%Y-%m-%d %H:%M:%S'
+			},
+			hasTimePicker: hasTimePicker,
+			hasDatePicker: hasDatePicker,
+			nullable: input.is('[data-nullable]'),
+			utcOffset: utcOffset,
+			minDate: input.is('[data-min-date]') ? this.getDateFromString(input.data('min-date')) : null,
+			maxDate: input.is('[data-max-date]') ? this.getDateFromString(input.data('max-date')) : null,
+			fixed: input.is('[data-fixed]') ? true : false,
+		};
+		
+		// Incorporate the options that were passed in with the build call if they
+		// are present.
+		if (opts) {
+			opts = $.extend({}, c_opts, opts);
+		} else {
+			opts = c_opts;
+		}		
+		
+		if (opts.fixed) {
 			cal.addClass('fixed');
 		}
-		
-		// Generate the date/time selector container.
-		var sel = $('<div class="selector"></div>');
-		
 		// If there's a date picker, generate its display.
-		if (hasDatePicker) {
-			if (!isFixed) {
+		if (opts.hasDatePicker) {
+			if (!opts.fixed) {
 				var ds = $('<a class="date-selector"></a>');
 				ds.append('<i class="fi-calendar"></i><span class="value"></span>');
 				sel.append(ds);			
@@ -145,7 +183,7 @@ $.fcdp = {
 		}
 
 		// If there's a time picker, generate its display.
-		if (hasTimePicker && !isFixed) {
+		if (opts.hasTimePicker && !opts.fixed) {
 			var ts = $('<a class="time-selector"></a>');
 			ts.append('<i class="fi-clock"></i><span class="value"></span>');
 			sel.append(ts);	
@@ -161,12 +199,10 @@ $.fcdp = {
 			});
 		}
 		
-		if (nullable) {
+		if (opts.nullable) {
 			var clear = $('<a class="clear"><i class="fi-x"></i></a>');
 			sel.append(clear);
 		}
-		
-		cal.append(sel);	
 		
 		// Prevent click events on the selectors from bubbling
 		// up to the body.
@@ -174,29 +210,18 @@ $.fcdp = {
 			evt.stopPropagation();
 		});
 		
-		// Establish options for the calendar to reduce the number of repeated DOM queries and
-		// comparisons throughout the rest of the code.
-		var opts = {
-			calendar: cal,
-			formats: {
-				'date': input.is('[data-date-format]') ? input.data('date-format') : '%A: %B %-d, %Y',
-				'time': input.is('[data-time-format]') ? input.data('time-format') : '%-I:%M %p',
-				'value': input.is('[data-value-format]') ? input.data('value-format') : '%Y-%m-%d %H:%M:%S'
-			},
+		// Add DOM element references to the options to reduce DOM queries in future calls.
+		opts = $.extend(opts, {
 			dateSelector: hasDatePicker ? cal.find('.date-selector') : null,
 			datePicker: hasDatePicker ? cal.find('.date-picker') : null,
 			timeSelector: hasTimePicker ? sel.find('.time-selector') : null,
 			timePicker: hasTimePicker ? cal.find('.time-picker') : null,
-			nullable: nullable,
-			clearButton: nullable ? cal.find('a.clear') : null,
-			input: input,
-			utcOffset: utcOffset,
-			minDate: minDate,
-			maxDate: maxDate
-		};
+			clearButton: opts.nullable ? cal.find('a.clear') : null,
+		});
 		
-		cal.data('opts', opts);		
-
+		cal.data('opts', opts);
+		input.data('opts', opts);
+		
 		if (opts.dateSelector) {
 			opts.dateSelector.click(function(evt) {
 				evt.preventDefault();
@@ -204,7 +229,7 @@ $.fcdp = {
 				var tp =cal.find('.time-picker');
 				var dp = cal.find('.date-picker');
 				var ds = cal.find('.date-selector');
-				dp.css({ top: ds.position().top + ds.outerHeight(), left: ds.position().left });				
+				dp.css({ top: ds.position().top + ds.outerHeight(), left: ds.position().left });
 				tp.hide();
 				dp.toggle();
 			});
@@ -231,7 +256,7 @@ $.fcdp = {
 				$.fcdp.setFieldDate(opts, null);
 			});
 		};
-		
+
 		this.buildCalendar(opts);
 		this.buildTime(opts);
 		this.setFieldDate(opts, this.getFieldDate(opts));
@@ -453,7 +478,7 @@ $.fcdp = {
 					date: null,
 					weekday_num: weekday_num,
 					is_weekend: (weekday_num == 0) || (weekday_num == 6),
-					is_current: (fieldDate.format('%Y%m%d') == date.format('%Y%m%d')),
+					is_current: false,
 					day_number: 0
 				}
 				
@@ -468,10 +493,11 @@ $.fcdp = {
 					}
 					
 					week.append(this.buildOtherMonthDayUI(opts, day_opts));
-				// Otherwise we are in the month, so generate a numbered link display.
+				// Otherwise we are in the month, so generate a numbered current month display.
 				} else {
 					day_opts.day_number = i - startingPos + 1;
 					day_opts.date = new Date(parts.year, parts.month, day_opts.day_number, parts.hour, parts.minute, parts.second);
+					day_opts.is_current = (fieldDate.format('%Y%m%d') == day_opts.date.format('%Y%m%d')),
 					week.append(this.buildDayUI(opts, day_opts));
 				}
 			
@@ -484,31 +510,25 @@ $.fcdp = {
 			}
 		
 			this.wireupCalendar(opts);
-		}
+		} 
 	},
 	
 	buildOtherMonthDayUI: function(opts, day_opts) {
-		if ($.isFunction(this.functions.buildOtherMonthDayUI)) {
-			response = this.functions.buildOtherMonthDayUI(opts, day_opts);
-		} 
-		
-		// If no response from the custom method, generate the default response.
+		var response = this.executeBehavior('buildOtherMonthDayUI', opts, day_opts);;
+
+		// If no response from the custom bound behaviors, generate the default response.
 		if (!response) {
 			var clazz = "day other-month" + (day_opts.is_weekend ? " weekend" : "");
 			response = '<div class="' + clazz + '">' + day_opts.day_number + '</div>';
 		}
-		
+
 		return response;
 	},
 	
 	buildDayUI: function(opts, day_opts) {
 		day_opts.is_clickable = this.dateIsClickable(opts, day_opts);
 		var day_num = day_opts.date.getDate();
-		var response = false;
-		
-		if ($.isFunction(this.functions.buildDayUI)) {
-			response = this.functions.buildDayUI(opts, day_opts);
-		}
+		var response = this.executeBehavior('buildDayUI', opts, day_opts);
 		
 		// If no response from the custom method, generate the default response.
 		if (!response) {
@@ -528,11 +548,10 @@ $.fcdp = {
 			return false;
 		} 
 		
-		if ($.isFunction(this.functions.dateIsClickable)) {
-			return this.functions.dateIsClickable(opts, day_opts);
-		}
+		var response = this.executeBehavior('dateIsClickable', opts, day_opts);
+		response = response === null ? true : response;
 		
-		return true;
+		return response;
 	},
 	
 	wireupCalendar: function(opts) {
@@ -581,7 +600,37 @@ $.fcdp = {
 		}
 	},
 	
-	functions: {}
+	execute: function(input, cmd, p1, p2) {
+		switch(cmd) {
+		case 'bindBehavior':
+			this.bindBehavior(input, p1, p2);
+			break;
+		};
+	},
+	
+	bindBehavior: function(input, behavior, func) {
+		if ($.isFunction(func)) {
+			var behaviors = input.data('behaviors');
+			behaviors = behaviors || {}
+			behaviors[behavior] = behaviors[behavior] || [];
+			behaviors[behavior].push(func);
+			input.data('behaviors', behaviors);
+		}
+	},
+	
+	executeBehavior: function(behavior, opts, addl_opts) {
+		var response = null;
+		var behaviors = opts.input.data('behaviors');
+		
+		if (behaviors && behaviors[behavior]) {
+			$.each(behaviors[behavior], function() {
+				if ($.isFunction(this)) {
+					response = this(opts, addl_opts, response);
+				}
+			});
+		}
+		return response;
+	}
 }
 
 $(document).ready(function() { $.fcdp.init(); });
