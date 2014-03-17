@@ -321,12 +321,6 @@ $cursor-text-value: text !default;
     body {
 	  
       background: $body-bg;
-	  background-image: url(grey-wood-bg.jpg);
-	  background-position: top center;
-	  background-attachment: fixed;
-	  background-repeat: repeat-y;
-	  background-size: 100%;
-
       color: $body-font-color;
       padding: 0;
       margin: 0;
