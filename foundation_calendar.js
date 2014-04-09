@@ -257,9 +257,9 @@ $.fcdp = {
 			});
 		};
 
+		this.setFieldDate(opts, this.getFieldDate(opts));
 		this.buildCalendar(opts);
 		this.buildTime(opts);
-		this.setFieldDate(opts, this.getFieldDate(opts));
 		this.updateTimePicker(opts);
 	},
 	
