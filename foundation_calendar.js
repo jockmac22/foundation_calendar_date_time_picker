@@ -596,6 +596,7 @@ $.fcdp = {
 				$.fcdp.setFieldDate(opts, newDate);
 				
 				opts.input.trigger('dateChange', [opts]);
+				dp.hide();
 			});
 		}
 	},
