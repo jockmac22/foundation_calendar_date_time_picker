@@ -438,12 +438,12 @@ $.fcdp = {
 		}
 	},
 	
-	buildCalendar: function(opts) {
+	buildCalendar: function(opts, date) {
 		var dp;
 		if (dp = opts.datePicker){
 			dp.empty();
 		
-			var workingDate = this.getWorkingDate(opts);
+			var workingDate = date ? date : this.getWorkingDate(opts);
 			var fieldDate = this.getFieldDate(opts);
 			fieldDate = fieldDate ? fieldDate : new Date();
 			
@@ -509,7 +509,7 @@ $.fcdp = {
 				}
 			}
 		
-			this.wireupCalendar(opts);
+			this.wireupCalendar(opts, workingDate);
 		} 
 	},
 	
@@ -554,16 +554,15 @@ $.fcdp = {
 		return response;
 	},
 	
-	wireupCalendar: function(opts) {
+	wireupCalendar: function(opts, date) {
 		var dp;
 		if (dp = opts.datePicker) {
 			dp.find('a.month-nav.prev').click(function(evt) {
 				evt.preventDefault();
 
 				var opts = $(this).closest('.calendar').data('opts');
-				var prevMonth = $.fcdp.moveMonth($.fcdp.getWorkingDate(opts), -1);
-				$.fcdp.setWorkingDate(opts, prevMonth);
-				$.fcdp.buildCalendar(opts);
+				var prevMonth = $.fcdp.moveMonth(date, -1);
+				$.fcdp.buildCalendar(opts, prevMonth);
 				
 				opts.input.trigger('monthChange', [opts]);
 				opts.input.trigger('monthPrev', [opts]);
@@ -573,9 +572,8 @@ $.fcdp = {
 				evt.preventDefault();
 
 				var opts = $(this).closest('.calendar').data('opts');
-				var nextMonth = $.fcdp.moveMonth($.fcdp.getWorkingDate(opts), 1);
-				$.fcdp.setWorkingDate(opts, nextMonth);
-				$.fcdp.buildCalendar(opts);
+				var nextMonth = $.fcdp.moveMonth(date, 1);
+				$.fcdp.buildCalendar(opts, nextMonth);
 
 				opts.input.trigger('monthChange', [opts]);
 				opts.input.trigger('monthNext', [opts]);
