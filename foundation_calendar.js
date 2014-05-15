@@ -86,7 +86,6 @@ $.fcdp = {
 		var date_attr = opts.input.data('working-date');
 		if (!date_attr || ('' + date_attr).length == 0) {
 			date = new Date();
-			this.setWorkingDate(opts, date, true);
 		} else {
 			date = this.getDateFromString(date_attr);
 		}
