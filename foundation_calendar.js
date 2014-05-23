@@ -23,9 +23,10 @@ var FCalendar = function(field, opts) {
 	}, opts);
 	
 	// Initialize the properties for this class.
-	this.field = $(field);
-	this.vDate = null;
-	this.sDate = null;
+	this.field = $(field);			// The input to wire up.
+	this.vDate = null;					// The visible date in the calendar
+	this.sDate = null;					// The selected date in the calendar
+	
 	
 	// The selected date in the calendar, defaults to opts value, unless a value is provided
 	// in the field.
@@ -77,6 +78,21 @@ FCalendar.prototype = {
 		}
 		
 		return this.vDate ? this.vDate : null;
+	},
+
+	// Get the first visible day in the visible calendar.  Given that months don't always
+	// start on a Sunday (or Monday), this date may be in the previous month.
+	firstVisibleDay: function() {
+		var v = moment(this.visible());
+		return v.subtract('d', v.day());
+	},
+	
+	// Get the last visible day in the visible calendar.  Given that months don't always
+	// end on a Saturday (or Sunday), this date may be in the next month.
+	lastVisibleDay: function() {
+		var v = moment(this.visible());
+		var lastDay = v.date(v.daysInMonth());
+		return lastDay.add('d', (7-lastDay.day()));
 	},
 
 	// Saves the current state of the calendar object to the field for later reference.
@@ -423,7 +439,7 @@ $.fcdp = {
 			val += 1;
 			val = val > opts.max ? opts.min : val;
 			
-			tvc.find('input.display').val((''+val).lpad(pad));
+			tvc.find('input.display').val(val < 10 ? '0' + val : val);
 			
 			var calOpts = $this.closest('.calendar').data('opts');
 			$.fcdp.updateTime(calOpts);			
@@ -440,7 +456,7 @@ $.fcdp = {
 			val -= 1;
 			val = val < opts.min ? opts.max : val;
 			
-			tvc.find('input.display').val((''+val).lpad(pad));
+			tvc.find('input.display').val(val < 10 ? '0' + val : val);
 			
 			var calOpts = $this.closest('.calendar').data('opts');
 			$.fcdp.updateTime(calOpts);			
@@ -502,8 +518,7 @@ $.fcdp = {
 			}
 			hour %= 24;
 
-			var newDate = opts.calendar.selected().hour(hour).minute(minute).second(second);
-			opts.calendar.selected(newDate);
+			opts.calendar.selected().hour(hour).minute(minute).second(second);
 		}
 	},
 	
@@ -511,41 +526,43 @@ $.fcdp = {
 		var dp = opts.dom.datePicker;
 		if (dp){
 			dp.empty();
-
-			var visibleDate = moment(opts.calendar.visible());
-			var selectedDate = moment(opts.calendar.selected());
+			var cal = opts.calendar;
+			var visibleDate = moment(cal.visible());
+			var selectedDate = moment(cal.selected());
 			
 			var week = $('<div class="week"></div>');
 			var header = $('<div class="header"></div>');
 			
-			header.append('<a href="#" class="month-nav prev"><span></span</a>');
-			header.append('<a href="#" class="month-nav next"><span></span></a>');
-			header.append('<div class="month">' + moment(visibleDate).format('MMMM YYYY') + '</div>');
+			header.append('<a href="#" class="month-nav prev"><i class="fi-arrow-left"></i></a>');
+			header.append('<a href="#" class="month-nav next"><i class="fi-arrow-right"></i></a>');
+			header.append('<div class="month">' + visibleDate.format('MMMM YYYY') + '</div>');
 
 			dp.append(header);
-		
+
+			var weeks = $('<div class="weeks"></div>');
 			var labels = $('<div class="week labels"></div>');
 			var ls = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 			for (i=0;i<7;i++) {
 				labels.append('<div class="day">' + ls[i] + '</div>');
 			}
-			dp.append(labels);
+			weeks.append(labels);
+
 
 			var i = 0;
 			
 			// Calculate the first Sunday date on the calendar, and set it to the currentDay
-			var calendarMonth = moment(visibleDate).month();
-			var lastDay = moment(visibleDate).date(visibleDate.daysInMonth());
-			lastDay.add('d', (7-lastDay.day()));
-			var currentDay = visibleDate.subtract('d', visibleDate.day());
+			var calendarMonth = visibleDate.month();
+			var currentDay = cal.firstVisibleDay();
+			var lastDay = cal.lastVisibleDay();
+			var today = moment();
 			
 			while (currentDay.isBefore(lastDay)) {
 				for (i=0;i<7;i++) {
 					var day_opts = {
 						date: currentDay,
 						is_current_month: currentDay.month() == calendarMonth,
-						is_weekend: (currentDay.day() == 0) || (currentDay.day() == 6),
-						is_today: currentDay.isSame(moment()),
+						is_weekend: currentDay.isoWeekday() >= 6,
+						is_today: currentDay.month() == today.month() && currentDay.date() == today.date() && currentDay.year() == today.year(),
 						is_selected: currentDay.isSame(selectedDate),
 					}
 					
@@ -556,9 +573,11 @@ $.fcdp = {
 					currentYear = currentDay.year();
 				}
 				
-				dp.append(week);
+				weeks.append(week);
+				week = $('<div class="week"></div>');
 			}
-
+			
+			dp.append(weeks);
 			this.wireupCalendar(opts, visibleDate);
 		} 
 	},
@@ -569,7 +588,7 @@ $.fcdp = {
 		// If no response from the custom method, generate the default response.
 		if (!response) {
 			var day_num = day_opts.date.date();
-			var clazz = "day" + (day_opts.is_current_month ? "" : " other-month") + (day_opts.is_weekend ? " weekend" : "") + (day_opts.is_selected ? " selected" : "") + (day_opts.is_current ? " today" : "");
+			var clazz = "day" + (day_opts.is_current_month ? "" : " other-month") + (day_opts.is_weekend ? " weekend" : "") + (day_opts.is_selected ? " selected" : "") + (day_opts.is_today ? " today" : "");
 			if (!day_opts.is_current_month) {
 				response = '<div class="' + clazz + '">' + day_num + '</div>';
 			} else if (day_opts.is_clickable) {
@@ -616,8 +635,8 @@ $.fcdp = {
 				var opts = $this.closest('.calendar').data('opts');
 				var dp = opts.dom.datePicker;
 
-				dp.find('a.current').removeClass('current');
-				$this.addClass('current');
+				dp.find('a.selected').removeClass('selected');
+				$this.addClass('selected');
 
 				var dayDate = $.fcdp.getDateFromString($this.attr('data-date'));
 				var fieldDate = $.fcdp.getFieldDate(opts) || $.fcdp.getWorkingDate(opts);

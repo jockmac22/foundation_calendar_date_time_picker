@@ -1,66 +1,79 @@
 @import "global"; 
 @import "forms";
 
-$date-picker-border:		1px solid darken($primary-color, 10%);
-$time-picker-border:		1px solid darken($primary-color, 10%);
+// The color scheme is based on a 5 color swatch.
+$color1: 										#FFFFFF;					// Dominant background color (e.g. Week days, calendar and time selector bodies).
+$color2: 										#494A49;					// Dominant foreground color (e.g. Week days, calendar and time selector bodies).
+$color3: 										#AEACA1;					// Secondary background color (e.g. Month header)
+$color4: 										#75736A;					// Secondary foreground color (e.g. Month header)
+$color5: 										#377FA9;					// Medium color (e.g. Weekend backgrounds)
 
-$header-background:			darken($primary-color, 10%);
-$header-foreground:			#FFF;
-$header-height:				28px;
-$header-font-size:			16px;
+$date-picker-font:					"Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+$date-picker-background:		$color1;
+$date-picker-padding:				0 5% 5% 5%;
+$date-picker-border:				1px solid $color5;
+$time-picker-border:				1px solid $color2;
 
-$month-background:			$header-background;
-$month-font-size:			$header-font-size;
-$month-height:				$header-height;
-$month-color:				$header-foreground;
-$month-padding:				5px 0;
-$month-arrow-size:			$month-font-size / 2.5;
-$month-arrow-top:			7px;
-$month-arrow-color:			#EEE;
-$month-arrow-hover-color:	darken($month-arrow-color, 10%);
+$header-background:					$color5;
+$header-foreground:					$color4;
+$header-height:							65px;
+$header-padding:						5px;
+$header-font-size:					28px;
 
-$label-background: 			$primary-color;
-$label-foreground: 			#FFF;
-$label-border:				1px solid $primary-color;
-$label-height:				23px;
-$label-padding:				5px;
-$label-font-size:			11px;
+$month-background:					$header-background;
+$month-font-size:						$header-font-size;
+$month-height:							$header-height;
+$month-color:								$color1;
+$month-padding:							5px 0;
+$month-arrow-size:					20px;
+$month-arrow-color:					$color1;
+$month-arrow-hover-color:		darken($month-arrow-color, 10%);
 
-$day-background:			#FFF;
-$day-foreground:			$primary-color;
-$day-border:				1px solid #FFF; 
-$day-padding:				3px;
+$label-background: 					$color1;
+$label-foreground: 					$color3;
+$label-border:							1px solid $color1;
+$label-height:							23px;
+$label-padding:							5px;
+$label-font-size:						11px;
 
-$small-day-font-size: 		22px;
-$small-date-picker-width:	100%;
-$small-day-height:			$small-day-font-size * 2.25;
+$day-background:						$color1;
+$day-foreground:						$color2;
+$day-border-light:					none; 
+$day-border-dark:						1px solid $color2;
+$day-padding:								3px;
 
-$medium-day-font-size:		18px;
+$today-background:					$color3;
+$today-foreground:					$color4;
+
+$hover-foreground:					$color3;
+$hover-background:					$color4;
+
+$selected-foreground:				$color1;
+$selected-background:				$color5;
+
+$small-day-font-size: 			22px;
+$small-date-picker-width:		100%;
+$small-day-height:					$small-day-font-size * 2.25;
+
+$medium-day-font-size:			11px;
 $medium-date-picker-width:	75%;
-$medium-day-height:			$medium-day-font-size * 2.25;
+$medium-day-height:					$medium-day-font-size * 2.25;
 
-$large-day-font-size:		16px;
-$large-date-picker-width:	50%;
-$large-day-height:			$large-day-font-size * 2.25;
+$large-day-font-size:				11px;
+$large-date-picker-width:		50%;
+$large-day-height:					$large-day-font-size * 3.75;
 
-$hover-border:				1px solid $primary-color;
-$hover-weekend-border:		$hover-border;
+$weekend-background:				$color1;
+$weekend-foreground:				$color3;
 
-$weekend-background:		$secondary_color;
-$weekend-foreground:		$primary-color;
-$weekend-border:			1px solid $secondary-color;
+$other-month-background:		lighten($color1, 30%);
+$other-month-foreground:		darken($color1, 10%);
 
-$other-month-foreground:	#CCC;
-$other-month-background:	$day-background;
-$other-month-border:		$day-border;
+$other-weekend-background:	lighten($color1, 30%);
+$other-weekend-foreground:	darken($color1, 10%);
 
-$other-weekend-foreground:	#BBB;
-$other-weekend-background:	$weekend-background;
-$other-weekend-border:		$weekend-border;
-
-$current-background:		$warning-color;
-$current-foreground:		#FFF;
-$current-border:			1px solid $warning-color;
+$current-background:				$warning-color;
+$current-foreground:				#FFF;
 
 $non-clickable-foreground:	#CCC;
 $non-clickable-weekend-foreground: #CCC;
@@ -70,6 +83,12 @@ $non-clickable-weekend-foreground: #CCC;
 	padding: 0;
 	border: none;
 	position: relative;
+	font-family: $date-picker-font;
+
+	a {
+		font-family: $date-picker-font;
+	}
+	
 
 	> .hidden {
 		display: none;
@@ -217,21 +236,24 @@ $non-clickable-weekend-foreground: #CCC;
 		display: none;
 		border: $date-picker-border;
 		width: $large-date-picker-width;
-		height: auto;
-		background: #FFF;
+		background: $date-picker-background;
 		z-index: 10000;
-
+		
+		@include clearfix;
+		
 		.header {
 			background: $month-background;
-			width:	100%;
 			position: relative;
 			
 			.month {
-				width: 80%;
+				width: 100%;
 				margin: 0 20% 0 2%;
-				text-align: left;
-				height: $month-height;
+				text-align: center;
 				font-size: $month-font-size;
+				height: $month-height;
+				line-height: $month-height - 10px;
+				vertical-align: middle;
+				
 				color:	$month-color;
 				padding: $month-padding;
 			}
@@ -239,135 +261,140 @@ $non-clickable-weekend-foreground: #CCC;
 			.month-nav {
 				position: absolute;
 				display: block;
-				top: $month-arrow-top;
+				top: 0;
+				height: $month-height;
+				line-height: $month-height - 10px;
+				vertical-align: middle;
+				font-size: $month-arrow-size;
+				color: $month-arrow-color;
 				
-				span {
-					display: block;
-					width: 0;
-					font-size: 0;
+				i {
+					&:before {
+						line-height: $month-height;
+						vertical-align: middle;
+					}
 				}
 				
 				&.next {
-					right: 0;
-					span {
-						border: $month-arrow-size solid $month-arrow-color;
-						border-top: $month-arrow-size solid transparent;
-						border-bottom: $month-arrow-size solid transparent;					
-						border-right: $month-arrow-size solid transparent;					
-					}
+					right: 10px;
 				}
 				
 				&.prev {
-					right: 24px;
-					span {
-						border: $month-arrow-size solid $month-arrow-color;
-						border-top: $month-arrow-size solid transparent;
-						border-bottom: $month-arrow-size solid transparent;					
-						border-left: $month-arrow-size solid transparent;
-					}
+					left: 10px;
 				}
 				
 				&:hover {
-
-					&.next {
-						span {
-							border: $month-arrow-size solid $month-arrow-hover-color;
-							border-top: $month-arrow-size solid transparent;
-							border-bottom: $month-arrow-size solid transparent;
-							border-right: $month-arrow-size solid transparent;
-						}
-					}
-				
-					&.prev {
-						span {
-							border: $month-arrow-size solid $month-arrow-hover-color;
-							border-top: $month-arrow-size solid transparent;
-							border-bottom: $month-arrow-size solid transparent;
-							border-left: $month-arrow-size solid transparent;
-						}
-					}
+					color: $month-arrow-hover-color;
 				}				
 			}
 		}
 		
-		.week {
-			display: block;
-			width: 100%;
-			height: $large-day-height;
-			white-space: no-wrap;
-			margin: 0;
-			padding: 0;
-			text-align: center;
+		.weeks {
+			display:	block;
+			padding: $date-picker-padding;
 			
-			.day {
-				display: inline-block;
-				text-align: center;
-				font-size: $large-day-font-size;
-				background: $day_background;
-				color: $day_foreground;
-				border: 1px solid #FFF;
-				vertical-align: middle;
-				padding: $day-padding;
-				width: (1 / 7) * 100%;
+			.week {
+			
+				display: block;
+				width: 100%;
 				height: $large-day-height;
-				line-height: $large-day-height - 7px;
-				
-				&.weekend {
-					background: $weekend-background;
-					color: $weekend-foreground;
-					border: $weekend-border;					
-				}
-				
-				&.weekend.current,
-				&.current {
-					background: $current-background;
-					color: $current-foreground;
-					border: $current-border;				
-				}				
-				
-				&.other-month {
-					color: $other-month-foreground;
-					background: $other-month-background;
-					border: $other-month-border;
-				}
-				
-				&.other-month.weekend {
-					color: $other-weekend-foreground;
-					background: $other-weekend-background;
-					border: $other-weekend-border;
-				}
-			}
+				margin: 0;
+				padding: 0;
+				text-align: center;
 			
-			span.day {
-				color: $non-clickable-foreground;
-				
-				&.weekend {
-					color: $non-clickable-weekend-foreground;
+				&:last-child {
+					.day {
+						border-bottom: 	$day-border-light;
+					}
 				}
-			}
-
 			
-			a.day {
-				&:hover {
-					border: $hover-border;
-				}
-
-				&.weekend:hover {
-					border: $hover-weekend-border;
-				}
-			}
-			
-			&.labels {
-				height: $label-height;
-				
 				.day {
-					background: $label-background;
-					color: $label-foreground;
-					border: $label-border;
+					display: inline-block;
+					text-align: center;
+					font-size: $large-day-font-size;
+					background: $day-background;
+					color: $day-foreground;
+					border: 1px solid #FFF;
+					vertical-align: middle;
+					padding: $day-padding;
+					width: (1 / 7) * 100%;
+					height: $large-day-height;
+					line-height: $large-day-height - 7px;
+					border: 			$day-border-dark;
+					border-top:		$day-border-light;
+					border-left:	$day-border-light;
+				
+					&:last-child {
+						border-right: 		$day-border-light;
+					}
+
+					&.weekend {
+						background: 			$weekend-background;
+						color: 						$weekend-foreground;
+					}
+				
+					&.weekend.today,
+					&.today {
+						background: 			$today-background;
+						color: 						$today-foreground;
+					}
+				
+					&.weekend.selected,
+					&.selected{
+						background: 			$selected-background;
+						color: 						$selected-foreground;
+					}
+				
+					&.other-month {
+						color: 						$other-month-foreground;
+						background: 			$other-month-background;
+					}
+				
+					&.other-month.weekend {
+						color: 						$other-weekend-foreground;
+						background: 			$other-weekend-background;
+					}
+				}
+			
+				span.day {
+					color: $non-clickable-foreground;
+				
+					&.weekend {
+						color: $non-clickable-weekend-foreground;
+					}
+				}
+
+			
+				a.day {
+					&:hover {
+						color:				$hover-foreground;
+						background:		$hover-background;
+
+						&.weekend.selected,
+						&.selected{
+							background: 			$selected-background;
+							color: 						$selected-foreground;
+						}
+					}
+
+
+
+					&.weekend:hover {
+					}
+				}
+			
+				&.labels {
 					height: $label-height;
-					line-height: $label-height - 10px;
-					padding: $label-padding;
-					font-size: $label-font-size;
+				
+					.day {
+						background: $label-background;
+						color: $label-foreground;
+						border: $label-border;
+						height: $label-height;
+						line-height: $label-height - 10px;
+						padding: $label-padding;
+						font-size: $label-font-size;
+					}
 				}
 			}
 		}
