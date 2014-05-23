@@ -22,15 +22,14 @@ var FCalendar = function(field, opts) {
 		dateChange: null
 	}, opts);
 	
-	console.info('Calendar Opts: %O', this.opts);
-	
-	// The input field that should be updated when things change in the calendar.
+	// Initialize the properties for this class.
 	this.field = $(field);
+	this.vDate = null;
+	this.sDate = null;
 	
 	// The selected date in the calendar, defaults to opts value, unless a value is provided
 	// in the field.
 	var selectedVal = this.field.val() && this.field.val().length > 0 ? this.field.val() : this.opts.selected;
-	console.info("Selected Value: %O", selectedVal); 
 	this.selected(selectedVal);
 	
 	// The visible month in the calendar, default to the opts value, unless a value is provided
@@ -90,7 +89,8 @@ FCalendar.prototype = {
 	// Move the visible month forward or backward by a number of months
 	moveMonth: function(months) {
 		this.trigger('beforeMoveMonth', [months]);
-		this.vDate = (months >= 0 ? this.vDate.add('M', months) : this.vDate.subtract('M', months)).date(1);
+		this.vDate.add('M', months);
+		this.vDate.date(1);
 		this.saveState();
 		this.trigger('moveMonth', [months]);
 	},
@@ -98,7 +98,8 @@ FCalendar.prototype = {
 	// Move the visible year forward or backward by a number of years
 	moveYear: function(years) {
 		this.trigger('beforeMoveYear', [years]);
-		this.vDate = (years >= 0 ? this.vDate.add('y', years) : this.vDate.subtract('y', years)).date(1);
+		this.vDate.add('y', years);
+		this.vDate.date(1);
 		this.saveState();
 		this.trigger('moveYear', [years]);
 	},
@@ -112,14 +113,16 @@ FCalendar.prototype = {
 	
 	moveToMonth: function(month) {
 		this.trigger('beforeMoveToMonth', [month]);
-		this.vDate = this.vDate.month(month);
+		this.vDate.month(month);
+		this.vDate.date(1);
 		this.saveState();
 		this.trigger('moveToMonth', [month]);
 	},
 	
 	moveToYear: function(year) {
 		this.trigger('beforeMoveToYear', [year]);
-		this.vDate = this.vDate.year(year);
+		this.vDate.year(year);
+		this.vDate.date(1);
 		this.saveState();
 		this.trigger('moveToYear', [year]);
 	},
@@ -531,15 +534,16 @@ $.fcdp = {
 			var i = 0;
 			
 			// Calculate the first Sunday date on the calendar, and set it to the currentDay
-			var calendarMonth = visibleDate.month();
+			var calendarMonth = moment(visibleDate).month();
+			var lastDay = moment(visibleDate).date(visibleDate.daysInMonth());
+			lastDay.add('d', (7-lastDay.day()));
 			var currentDay = visibleDate.subtract('d', visibleDate.day());
-			var currentMonth = currentDay.month();
 			
-			while (currentMonth <= calendarMonth) {
+			while (currentDay.isBefore(lastDay)) {
 				for (i=0;i<7;i++) {
 					var day_opts = {
 						date: currentDay,
-						is_current_month: currentMonth == calendarMonth,
+						is_current_month: currentDay.month() == calendarMonth,
 						is_weekend: (currentDay.day() == 0) || (currentDay.day() == 6),
 						is_today: currentDay.isSame(moment()),
 						is_selected: currentDay.isSame(selectedDate),
@@ -549,6 +553,7 @@ $.fcdp = {
 					
 					currentDay = currentDay.add('d', 1);
 					currentMonth = currentDay.month();
+					currentYear = currentDay.year();
 				}
 				
 				dp.append(week);

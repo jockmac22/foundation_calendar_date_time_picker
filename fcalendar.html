@@ -55,7 +55,7 @@
 
 	<h1>FCalendar Object Test</h1>
 
-	<input type="text" id="calendar" name="calendar" value="1981-04-12 10:52:00" />
+	<input type="text" id="calendar" name="calendar"  />
 	
 	<label>Selected: <span id="selected"></span><br />
 	<label>-- Formatted: <span id="selected_format"></span></br>
@@ -91,7 +91,7 @@
 		$('span#selected_format').html(cal.toString());
 		$('span#selected_date').html(cal.toString('date'));
 		$('span#selected_time').html(cal.toString('time'));
-		$('span#visible').html(cal.visible());
+		$('span#visible').html(cal.visible().toString());
 	}
 	
 	$(document).ready(function() {
@@ -100,13 +100,17 @@
 		updateDisplay(cal);
 		
 		calField.change(function() {
+			var cal = $(this).data('calender');
 			updateDisplay($(this).data('calendar'));
 		});
 		
+		calField.bind('dateMove', function() {
+			var cal = $(this).data('calender');
+			updateDisplay(cal);			
+		});
 		
 		$('a#selectBirthday').click(function() {
 			cal.selected('1977-07-06');
-			updateDisplay(cal);
 		});
 
 		$('a#nextMonth').click(function() {
