@@ -1,29 +1,25 @@
 <html>
 <head>
-	<title>Calendar: A date and time picker for the Foundation CSS Framework</title>
+	<title>Foundation Calendar: A date and time picker for the Foundation CSS Framework</title>
 	
 	<!-- Make sure you have the foundation base, and icons (v3) CSS -->
-	<link rel="stylesheet" type="text/css" href="foundation/foundation.css" />
-	<link rel="stylesheet" type="text/css" href="foundation-icon-fonts-3/foundation-icons.css" />
+	<link rel="stylesheet" type="text/css" href="lib/foundation/foundation.css" />
+	<link rel="stylesheet" type="text/css" href="lib/foundation-icon-fonts-3/foundation-icons.css" />
 	
-	<!-- Add the foundation calendar CSS -->
-	<link rel="stylesheet" type="text/css" href="foundation_calendar.css" />
-	
-	<!-- Make sure you have jQuery, date.js loading properly -->
-	<script type="text/javascript" src="js/jquery.js" ></script>
-	<script type="text/javascript" src="foundation/foundation.min.js" ></script>
+	<!-- Make sure you have jQuery, and moment.js loading properly -->
+	<script type="text/javascript" src="lib/jquery.js" ></script>
+	<script type="text/javascript" src="lib/moment.js" ></script>
+	<script type="text/javascript" src="lib/foundation/foundation.min.js" ></script>
 	<script type="text/javascript">
 	$(document).ready(function() {
 		$(document).foundation();
 	});
 	</script>
 	
-	<script type="text/javascript" src="js/date.js" ></script>
-	
-	<!-- Add the foundation calendar Javascript -->
+	<!-- Add the foundation calendar Javascript and CSS -->
+	<link rel="stylesheet" type="text/css" href="foundation_calendar.css" />
 	<script type="text/javascript" src="foundation_calendar.js" ></script>
-	<script type="text/javascript" src="helpers/date-helpers.js" ></script>
-	<script type="text/javascript" src="helpers/string-helpers.js" ></script>
+
 	
 	<style type="text/css">
 	label {
@@ -337,7 +333,7 @@
 	<div class="row">
 		<div class="medium-12 large-8 columns">
 			<h3>UTC Offset</h3>
-			<p>Assuming that the current time is UTC, you can assign an offset value so that the display will update accordingly.  In the current example, the current UTC time is <script>document.write(new Date().format("%H:%M:%S"));</script>.  Our offset is set to -7 hours (US Mountain Time), so the displayed time is minus 7 hours.</p>
+			<p>Assuming that the current time is UTC, you can assign an offset value so that the display will update accordingly.  In the current example, the current UTC time is <script>document.write(moment().format("H:M:S"));</script>.  Our offset is set to -7 hours (US Mountain Time), so the displayed time is minus 7 hours.</p>
 			<p>If you change the time, and then click the "Show the value" button, you will see that the stored value is actually in the calculated UTC time.</p>
 			<div class="row">
 				<div class="small-12 medium-8 large-12 columns medium-centered">

@@ -6,6 +6,142 @@ Source available at: https://github.com/jockmac22/foundation_calendar_date_time_
 Original Source Credit: Robert J. Patrick (rpatrick@mit.edu)
 */
 
+// FCalendar
+// An object wrapper that handles event signaling for calendar navigation and selection.
+//
+// This object will update the visible calendar date, the selected calendar date, and feed
+// back to and from the field that is tied to the calendar.
+var FCalendar = function(field, opts) {
+	// Extend the provided opts with the defaults, and store them.
+	this.opts = $.extend({}, {
+		selected: null,
+		visible: new Date(),
+		valueFormat: 'YYYY-MM-DD HH:mm:ss',
+		dateFormat: 'MMMM D, YYYY',
+		timeFormat: 'HH:mm:ss',
+		dateChange: null
+	}, opts);
+	
+	console.info('Calendar Opts: %O', this.opts);
+	
+	// The input field that should be updated when things change in the calendar.
+	this.field = $(field);
+	
+	// The selected date in the calendar, defaults to opts value, unless a value is provided
+	// in the field.
+	var selectedVal = this.field.val() && this.field.val().length > 0 ? this.field.val() : this.opts.selected;
+	console.info("Selected Value: %O", selectedVal); 
+	this.selected(selectedVal);
+	
+	// The visible month in the calendar, default to the opts value, unless a value is provided
+	// in the field.'
+	var visibleVal = this.field.val() && this.field.val().length > 0 ? this.field.val() : this.opts.visible;
+	this.visible(visibleVal);
+	
+	// store a reference to this calendar in the field DOM object.
+	this.field.data('calendar', this);
+	
+	// Wireup the value change event of the field to update the selected date.
+	this.field.change(function() {
+		var $this = $(this);
+		var cal = $this.data('calendar');
+		cal.selected($this.val(), true);
+	});
+}
+
+FCalendar.prototype = {
+	// Gets and/or sets the selected date with a standard Javascript date object.
+	selected: function(date, stopPropagation) {
+		if (date) {
+			this.trigger('beforeSelectedDateChange', [date, stopPropagation]);
+			this.sDate = moment(date);
+			
+			if (!stopPropagation) {
+				this.field.val(this.sDate.format(this.opts.valueFormat));
+			}
+			
+			this.saveState();
+			this.trigger('selectedDateChange', [date, stopPropagation]);
+		}
+		
+		return this.sDate ? this.sDate : null;
+	},
+
+	// Gets and/or sets the visible date with a standard Javascript date object.
+	visible: function(date) {
+		if (date) {
+			this.trigger('beforeVisibleDateChange', [date]);
+			this.vDate = moment(date);
+			this.vDate.date(1);
+			this.saveState();
+			this.trigger('visibleDateChange', [date]);
+		}
+		
+		return this.vDate ? this.vDate : null;
+	},
+
+	// Saves the current state of the calendar object to the field for later reference.
+	saveState: function() {
+		this.trigger('beforeSaveState')
+		this.field.data('calender', this);
+		this.trigger('saveState');
+	},
+
+	// Move the visible month forward or backward by a number of months
+	moveMonth: function(months) {
+		this.trigger('beforeMoveMonth', [months]);
+		this.vDate = (months >= 0 ? this.vDate.add('M', months) : this.vDate.subtract('M', months)).date(1);
+		this.saveState();
+		this.trigger('moveMonth', [months]);
+	},
+	
+	// Move the visible year forward or backward by a number of years
+	moveYear: function(years) {
+		this.trigger('beforeMoveYear', [years]);
+		this.vDate = (years >= 0 ? this.vDate.add('y', years) : this.vDate.subtract('y', years)).date(1);
+		this.saveState();
+		this.trigger('moveYear', [years]);
+	},
+	
+	moveTo: function(date) {
+		this.trigger('beforeMoveTo', [date]);
+		this.vDate = moment(date).date(1);
+		this.saveState();
+		this.trigger('moveTo', [date]);
+	},
+	
+	moveToMonth: function(month) {
+		this.trigger('beforeMoveToMonth', [month]);
+		this.vDate = this.vDate.month(month);
+		this.saveState();
+		this.trigger('moveToMonth', [month]);
+	},
+	
+	moveToYear: function(year) {
+		this.trigger('beforeMoveToYear', [year]);
+		this.vDate = this.vDate.year(year);
+		this.saveState();
+		this.trigger('moveToYear', [year]);
+	},
+	
+	toString: function(part) {
+		if (!this.sDate) {
+			return '--';
+		} else if (part && part[0].toLowerCase() == 'd') {
+			return this.sDate.format(this.opts.dateFormat);
+		} else if (part && part[0].toLowerCase() == 't') {
+			return this.sDate.format(this.opts.timeFormat);
+		} else {
+			return this.sDate.format(this.opts.dateFormat) + " " + this.sDate.format(this.opts.timeFormat);
+		}
+	},
+	
+	trigger: function(event, params) {
+		this.field.trigger(event, [this, this.opts].push(params));
+	}
+}
+
+
 $.fn.fcdp = function(opts, p1, p2) {
 	var type = $.type(opts);
 	if (type == 'object') {
@@ -22,7 +158,9 @@ $.fn.fcdp = function(opts, p1, p2) {
 $.fcdp = {
 	init: function() {
 		$('input[data-date-time]').add($('input[data-date]')).add($('input[data-time]')).each(function() {
-			$.fcdp.buildUI($(this));
+			var input = $(this);
+			$.fcdp.wireupInput(input);
+			$.fcdp.buildUI(input);
 		});
 		
 		// Wireup the body to hide display elements when clicked.
@@ -32,86 +170,25 @@ $.fcdp = {
 		});		
 	},
 	
-	/***
-		Date Manipulation Helper Methods
-	 ***/
-	getDateFromString: function(str, nullable) {
-		nullable = nullable || true;
-		return (!str && !nullable) ? null : (!str ? new Date() : new Date.parse(str));;		
+	wireupInput: function(input) {
+		input.bind('moveMonth', function(months) {
+			var opts = $(this).data('opts');
+			console.info(opts.calendar.visible());
+			$.fcdp.buildCalendar(opts);
+		});
 	},
-	
-	moveMonth: function(date, months) {
-		return date.add({ months: months });
-	},
-	
-	daysInMonth: function(date) {
-		lastDay = new Date(date.getFullYear(), date.getMonth()+1, 0);
-		return lastDay.getDate();
-	},	
-	
-	dateParts: function(date) {
-		var parts = {
-			year: date.getYear(),
-			month: date.getMonth(),
-			day: date.getDate(),
-			hour: date.getHours(),
-			minute: date.getMinutes(),
-			second: date.getSeconds()
-		}
-		
-		parts.year += parts.year < 2000 ? 1900 : 0;
-		return parts;
-	},
-	
-	/***
-		UI Date Management Methods
-	 ***/
-	getFieldDate: function(opts) {
-		var val = opts.input.val();
-		date = opts.nullable && !val ? null : (!opts.nullable && !val ? new Date() : this.getDateFromString(val));
-		return date;
-	},
-	
-	// Sets the field date, date option must always be in UTC.
-	setFieldDate: function(opts, date) {
-		var inputVal = date ? date.format(opts.formats['value']) : '';
-
-		opts.input.val(inputVal);
-
-		date = date ? date.add(opts.utcOffset).hours() : date;
-		this.setWorkingDate(opts, date);
-	},
-	
-	getWorkingDate: function(opts) {
-		var date_attr = opts.input.data('working-date');
-		if (!date_attr || ('' + date_attr).length == 0) {
-			date = new Date();
-		} else {
-			date = this.getDateFromString(date_attr);
-		}
-		return date;
-	},
-	
-	setWorkingDate: function(opts, date) {
-		opts.input.data('working-date', date ? date.format('%Y-%m-%d %H:%M:%S') : '');		
-		
-		var dateVal = '--';
-		var timeVal = '--';
-
-		if (date) {
-			dateVal = date.format(opts.formats['date']);
-			timeVal = date.format(opts.formats['time']);
-		}
-
-		if (opts.dateSelector) { opts.dateSelector.find('.value').html(dateVal); }
-		if (opts.timeSelector) { opts.timeSelector.find('.value').html(timeVal); }		
-	},
-		
 	
 	/***
 		UI Construction and Event Handling
 	 ***/
 	buildUI: function(input, opts) {
+		// Build the FCalendar object
+		var calendar = new FCalendar(input, {
+			dateFormat: input.is('[data-date-format]') ? input.data('date-format') : 'MMMM D, YYYY',
+			timeFormat: input.is('[data-time-format]') ? input.data('time-format') : 'h:mm:ss a',
+			valueFormat: input.is('[data-value-format]') ? input.data('value-format') : 'YYYY-MM-DD HH:mm:ss'
+		});
+		
 		// Wrap the input, and hide it from display.
 		input.wrap('<div class="calendar"></div>');
 		input.wrap('<div class="hidden"></div>');
@@ -124,10 +201,6 @@ $.fcdp = {
 		var sel = $('<div class="selector"></div>');
 		cal.append(sel);
 		
-		// Set UTC offset from the unobtrusive javascript
-		var utcOffset = input.is('[data-utc-offset]') ? parseInt(input.data('utc-offset')) : 0;
-		utcOffset = isNaN(utcOffset) ? 0 : utcOffset;
-		
 		// Determine if the time and datepicker states
 		var hasTimePicker = (input.is('[data-time]') || input.is('[data-date-time]')) ? true : false;
 		var hasDatePicker = (input.is('[data-date]') || input.is('[data-date-time]')) ? true : !hasTimePicker;
@@ -136,38 +209,38 @@ $.fcdp = {
 		// input field.
 		var c_opts = {
 			input: input,
-			calendar: cal,
-			formats: {
-				'date': input.is('[data-date-format]') ? input.data('date-format') : '%A: %B %-d, %Y',
-				'time': input.is('[data-time-format]') ? input.data('time-format') : '%-I:%M %p',
-				'value': input.is('[data-value-format]') ? input.data('value-format') : '%Y-%m-%d %H:%M:%S'
-			},
+			calendar: calendar,
 			hasTimePicker: hasTimePicker,
 			hasDatePicker: hasDatePicker,
 			nullable: input.is('[data-nullable]'),
-			utcOffset: utcOffset,
 			minDate: input.is('[data-min-date]') ? this.getDateFromString(input.data('min-date')) : null,
 			maxDate: input.is('[data-max-date]') ? this.getDateFromString(input.data('max-date')) : null,
 			fixed: input.is('[data-fixed]') ? true : false,
+			dom: {
+				calendar: cal,
+				dateSelector: null,
+				datePicker: null,
+				timeSelector: null,
+				timePicker: null,
+				clearButton: null
+			}
 		};
 		
 		// Incorporate the options that were passed in with the build call if they
 		// are present.
-		if (opts) {
-			opts = $.extend({}, c_opts, opts);
-		} else {
-			opts = c_opts;
-		}		
-		
+		opts = $.extend({}, c_opts, opts);
+
+		// Set the 'fixed' view class.
 		if (opts.fixed) {
 			cal.addClass('fixed');
 		}
+		
 		// If there's a date picker, generate its display.
 		if (opts.hasDatePicker) {
 			if (!opts.fixed) {
 				var ds = $('<a class="date-selector"></a>');
 				ds.append('<i class="fi-calendar"></i><span class="value"></span>');
-				sel.append(ds);			
+				sel.append(ds);
 				sel.addClass('date');
 			}
 			
@@ -210,22 +283,20 @@ $.fcdp = {
 		});
 		
 		// Add DOM element references to the options to reduce DOM queries in future calls.
-		opts = $.extend(opts, {
-			dateSelector: hasDatePicker ? cal.find('.date-selector') : null,
-			datePicker: hasDatePicker ? cal.find('.date-picker') : null,
-			timeSelector: hasTimePicker ? sel.find('.time-selector') : null,
-			timePicker: hasTimePicker ? cal.find('.time-picker') : null,
-			clearButton: opts.nullable ? cal.find('a.clear') : null,
-		});
+		opts.dom.dateSelector = hasDatePicker ? cal.find('.date-selector') : null;
+		opts.dom.datePicker = hasDatePicker ? cal.find('.date-picker') : null;
+		opts.dom.timeSelector = hasTimePicker ? sel.find('.time-selector') : null;
+		opts.dom.timePicker = hasTimePicker ? cal.find('.time-picker') : null;
+		opts.dom.clearButton = opts.nullable ? cal.find('a.clear') : null;
 		
 		cal.data('opts', opts);
 		input.data('opts', opts);
 		
-		if (opts.dateSelector) {
-			opts.dateSelector.click(function(evt) {
+		if (opts.dom.dateSelector) {
+			opts.dom.dateSelector.click(function(evt) {
 				evt.preventDefault();
 				var cal = $(this).closest('.calendar');
-				var tp =cal.find('.time-picker');
+				var tp = cal.find('.time-picker');
 				var dp = cal.find('.date-picker');
 				var ds = cal.find('.date-selector');
 				dp.css({ top: ds.position().top + ds.outerHeight(), left: ds.position().left });
@@ -234,7 +305,7 @@ $.fcdp = {
 			});
 		};
 		
-		if (opts.timeSelector) {
+		if (opts.dom.timeSelector) {
 			cal.find('a.time-selector').click(function(evt) {
 				evt.preventDefault();
 				var cal = $(this).closest('.calendar');
@@ -247,32 +318,32 @@ $.fcdp = {
 			});
 		};
 		
-		if (opts.clearButton) {
-			opts.clearButton.click(function(evt) {
+		if (opts.dom.clearButton) {
+			opts.dom.clearButton.click(function(evt) {
 				evt.preventDefault();
 				var opts = $(this).closest('.calendar').data('opts');
-				opts.datePicker.add(opts.timePicker).hide();
+				opts.dom.datePicker.add(opts.dom.timePicker).hide();
 				$.fcdp.setFieldDate(opts, null);
 			});
 		};
 
-		this.setFieldDate(opts, this.getFieldDate(opts));
+		// this.setFieldDate(opts, this.getFieldDate(opts));
 		this.buildCalendar(opts);
 		this.buildTime(opts);
 		this.updateTimePicker(opts);
 	},
 	
 	buildTime: function(opts) {
-		if (tp = opts.timePicker) {
-		
+		if (tp = opts.dom.timePicker) {
+
 			var header = $('<div class="header"></div>');
 			var time_label = $('<div class="time">Time</div>');
 			header.append(time_label);
-		
+
 			tp.append(header);
-		
+
 			var time = $('<div class="time"></div>');
-		
+
 			var ctlHour = $('<div class="value-control hour"><label>Hr</label><a class="value-change up"><span></span></a><input type="text" class="display" value="12" /><a class="value-change down"><span></span></a></div>');
 			var ctlMinute = $('<div class="value-control minute"><label>Min</label><a class="value-change up"><span></span></a><input type="text" class="display" value="00" /><a class="value-change down"><span></span></a></div>');
 			var ctlSecond = $('<div class="value-control second"><label>Sec</label><a class="value-change up"><span></span></a><input type="text" class="display" value="00" /><a class="value-change down"><span></span></a></div>');
@@ -290,7 +361,7 @@ $.fcdp = {
 	},
 	
 	wireupTime: function(opts) {
-		if (tp = opts.timePicker) {
+		if (tp = opts.dom.timePicker) {
 			var hour = tp.find('.value-control.hour');
 			this.wireupTimeValueControl(hour, 1, 12, 1);
 
@@ -393,21 +464,21 @@ $.fcdp = {
 	
 	updateTimePicker: function(opts) {
 		var tp;
-		if (tp = opts.timePicker) {
-			var fieldDate = this.getWorkingDate(opts);
+		if (tp = opts.dom.timePicker) {
+			var selectedDate = opts.calendar.selected();
 		
-			if (fieldDate) {
-				tp.find('.value-control.hour').find('input.display').val(fieldDate.format('%-I'));
-				tp.find('.value-control.minute').find('input.display').val(fieldDate.format('%M'));
-				tp.find('.value-control.second').find('input.display').val(fieldDate.format('%S'));
-				tp.find('.value-control.ampm').find('input.display').val(fieldDate.format('%p'));
+			if (selectedDate) {
+				tp.find('.value-control.hour').find('input.display').val(selectedDate.format('HH'));
+				tp.find('.value-control.minute').find('input.display').val(selectedDate.format('mm'));
+				tp.find('.value-control.second').find('input.display').val(selectedDate.format('ss'));
+				tp.find('.value-control.ampm').find('input.display').val(selectedDate.format('A'));
 			}
 		}
 	},
 	
 	updateTime: function(opts) {
 		var tp;
-		if (tp = opts.timePicker) {
+		if (tp = opts.dom.timePicker) {
 
 			var hour = tp.find('.value-control.hour').find('input.display').val();
 			hour = hour ? parseInt(hour) : 0;
@@ -421,118 +492,82 @@ $.fcdp = {
 			var ampm = tp.find('.value-control.ampm').find('input.display').val();
 
 
+			// Adjust the 24 hour value, based on the 12 hour am/pm selection.
 			hour = hour == 12 ? 0 : hour;
 			if (ampm.toLowerCase() === 'pm') {
 				hour += 12;
 			}
-	
 			hour %= 24;
 
-			var wDate = this.getWorkingDate(opts);
-			var newDate = new Date(wDate.getFullYear(), wDate.getMonth(), wDate.getDate(), hour, minute, second);
-			newDate = newDate ? newDate.add(-opts.utcOffset).hours() : newDate;
-			this.setFieldDate(opts, newDate);
-			
-			opts.input.trigger('timeChange', [opts]);
+			var newDate = opts.calendar.selected().hour(hour).minute(minute).second(second);
+			opts.calendar.selected(newDate);
 		}
 	},
 	
-	buildCalendar: function(opts, date) {
-		var dp;
-		if (dp = opts.datePicker){
+	buildCalendar: function(opts) {
+		var dp = opts.dom.datePicker;
+		if (dp){
 			dp.empty();
-		
-			var workingDate = date ? date : this.getWorkingDate(opts);
-			var fieldDate = this.getFieldDate(opts);
-			fieldDate = fieldDate ? fieldDate : new Date();
+
+			var visibleDate = moment(opts.calendar.visible());
+			var selectedDate = moment(opts.calendar.selected());
 			
-			var parts = this.dateParts(workingDate);
-			var i = 0;
-			var startingPos = new Date(parts.year, parts.month, 1).getDay();
-			var days = this.daysInMonth(workingDate) + startingPos;
 			var week = $('<div class="week"></div>');
-			var previousMonth = this.moveMonth(this.getWorkingDate(opts), -1);
-			var daysInPreviousMonth = this.daysInMonth(previousMonth);
-						
 			var header = $('<div class="header"></div>');
+			
 			header.append('<a href="#" class="month-nav prev"><span></span</a>');
 			header.append('<a href="#" class="month-nav next"><span></span></a>');
-			header.append('<div class="month">' + workingDate.format('%B %Y') + '</div>');
-		
+			header.append('<div class="month">' + moment(visibleDate).format('MMMM YYYY') + '</div>');
+
 			dp.append(header);
 		
 			var labels = $('<div class="week labels"></div>');
+			var ls = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 			for (i=0;i<7;i++) {
-				var ls = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 				labels.append('<div class="day">' + ls[i] + '</div>');
 			}
 			dp.append(labels);
 
-			// Iterate the maximum 6 weeks of days (6 is the maximum number of weeks
-			// on a calendar for any given month).
-			for (i = 0; i < 42; i++) {
-				var weekday_num = i % 7;
-				
-				var day_opts = {
-					date: null,
-					weekday_num: weekday_num,
-					is_weekend: (weekday_num == 0) || (weekday_num == 6),
-					is_current: false,
-					day_number: 0
-				}
-				
-				// If i is outside of the starting pos and the days in the
-				// month, then we are in another month, so generate a non-link
-				// display
-				if (i < startingPos || i >= days) {
-					if (i < startingPos) {
-						day_opts.day_number = ((daysInPreviousMonth - (startingPos-1)) + i);
-					} else if (i >= days) {
-						day_opts.day_number = (i - days + 1);
+			var i = 0;
+			
+			// Calculate the first Sunday date on the calendar, and set it to the currentDay
+			var calendarMonth = visibleDate.month();
+			var currentDay = visibleDate.subtract('d', visibleDate.day());
+			var currentMonth = currentDay.month();
+			
+			while (currentMonth <= calendarMonth) {
+				for (i=0;i<7;i++) {
+					var day_opts = {
+						date: currentDay,
+						is_current_month: currentMonth == calendarMonth,
+						is_weekend: (currentDay.day() == 0) || (currentDay.day() == 6),
+						is_today: currentDay.isSame(moment()),
+						is_selected: currentDay.isSame(selectedDate),
 					}
 					
-					week.append(this.buildOtherMonthDayUI(opts, day_opts));
-				// Otherwise we are in the month, so generate a numbered current month display.
-				} else {
-					day_opts.day_number = i - startingPos + 1;
-					day_opts.date = new Date(parts.year, parts.month, day_opts.day_number, parts.hour, parts.minute, parts.second);
-					day_opts.is_current = (fieldDate.format('%Y%m%d') == day_opts.date.format('%Y%m%d')),
 					week.append(this.buildDayUI(opts, day_opts));
+					
+					currentDay = currentDay.add('d', 1);
+					currentMonth = currentDay.month();
 				}
-			
-				// If we're at the end of the week, append the week to the display, and
-				// generate a new week
-				if (weekday_num == 6) {
-					dp.append(week);
-					week = $('<div class="week"></div>');
-				}
+				
+				dp.append(week);
 			}
-		
-			this.wireupCalendar(opts, workingDate);
+
+			this.wireupCalendar(opts, visibleDate);
 		} 
-	},
-	
-	buildOtherMonthDayUI: function(opts, day_opts) {
-		var response = this.executeBehavior('buildOtherMonthDayUI', opts, day_opts);;
-
-		// If no response from the custom bound behaviors, generate the default response.
-		if (!response) {
-			var clazz = "day other-month" + (day_opts.is_weekend ? " weekend" : "");
-			response = '<div class="' + clazz + '">' + day_opts.day_number + '</div>';
-		}
-
-		return response;
 	},
 	
 	buildDayUI: function(opts, day_opts) {
 		day_opts.is_clickable = this.dateIsClickable(opts, day_opts);
-		var day_num = day_opts.date.getDate();
 		var response = this.executeBehavior('buildDayUI', opts, day_opts);
-		
 		// If no response from the custom method, generate the default response.
 		if (!response) {
-			var clazz = "day" + (day_opts.is_weekend ? " weekend" : "") + (day_opts.is_current ? " current" : "");
-			if (day_opts.is_clickable) {
+			var day_num = day_opts.date.date();
+			var clazz = "day" + (day_opts.is_current_month ? "" : " other-month") + (day_opts.is_weekend ? " weekend" : "") + (day_opts.is_selected ? " selected" : "") + (day_opts.is_current ? " today" : "");
+			if (!day_opts.is_current_month) {
+				response = '<div class="' + clazz + '">' + day_num + '</div>';
+			} else if (day_opts.is_clickable) {
 				response = '<a href="#' + day_num + '" class="' + clazz + '" data-date="' + day_opts.date.format() + '">' + day_num + '</a>';
 			} else {
 				response = '<span class="' + clazz + '" data-date="' + day_opts.date.format() + '">' + day_num + '</span>';
@@ -554,34 +589,27 @@ $.fcdp = {
 	},
 	
 	wireupCalendar: function(opts, date) {
-		var dp;
-		if (dp = opts.datePicker) {
-			dp.find('a.month-nav.prev').click(function(evt) {
+		console.info('wireupCalendar');
+		var dp  = opts.dom.datePicker;
+		if (dp) {
+			dp.find('a.month-nav.prev').unbind('click').click(function(evt) {
 				evt.preventDefault();
-
+				console.info('Previous Month');
 				var opts = $(this).closest('.calendar').data('opts');
-				var prevMonth = $.fcdp.moveMonth(date, -1);
-				$.fcdp.buildCalendar(opts, prevMonth);
-				
-				opts.input.trigger('monthChange', [opts]);
-				opts.input.trigger('monthPrev', [opts]);
+				opts.calendar.moveMonth(-1);
 			});
 
-			dp.find('a.month-nav.next').click(function(evt) {
+			dp.find('a.month-nav.next').unbind('click').click(function(evt) {
 				evt.preventDefault();
-
+				console.info('Next Month');
 				var opts = $(this).closest('.calendar').data('opts');
-				var nextMonth = $.fcdp.moveMonth(date, 1);
-				$.fcdp.buildCalendar(opts, nextMonth);
-
-				opts.input.trigger('monthChange', [opts]);
-				opts.input.trigger('monthNext', [opts]);
+				opts.calendar.moveMonth(1);
 			});
 
 			dp.find('a.day').click(function(evt) {
 				var $this = $(this);
 				var opts = $this.closest('.calendar').data('opts');
-				var dp = opts.datePicker;
+				var dp = opts.dom.datePicker;
 
 				dp.find('a.current').removeClass('current');
 				$this.addClass('current');

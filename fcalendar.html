@@ -1,0 +1,150 @@
+<html>
+<head>
+	<title>Foundation Calendar: A date and time picker for the Foundation CSS Framework</title>
+	
+	<!-- Make sure you have the foundation base, and icons (v3) CSS -->
+	<link rel="stylesheet" type="text/css" href="lib/foundation/foundation.css" />
+	<link rel="stylesheet" type="text/css" href="lib/foundation-icon-fonts-3/foundation-icons.css" />
+	
+	<!-- Make sure you have jQuery, and moment.js loading properly -->
+	<script type="text/javascript" src="lib/jquery.js" ></script>
+	<script type="text/javascript" src="lib/moment.js" ></script>
+	<script type="text/javascript" src="lib/foundation/foundation.min.js" ></script>
+	<script type="text/javascript">
+	$(document).ready(function() {
+		$(document).foundation();
+	});
+	</script>
+	
+	<!-- Add the foundation calendar Javascript and CSS -->
+	<link rel="stylesheet" type="text/css" href="foundation_calendar.css" />
+	<script type="text/javascript" src="foundation_calendar.js" ></script>
+
+	
+	<style type="text/css">
+	label {
+		margin-top: 20px;
+	}
+	code {
+		font-size: 14px;
+	}
+	
+	.row {
+		margin-bottom: 20px;
+	}
+	
+	.header {
+		border-bottom: 1px solid #333;
+	}
+	
+	dl dt {
+		display: inline-block;
+		width: 18%;
+		margin-right: 1%;
+		vertical-align: top;
+	}
+	
+	dl dd {
+		display: inline-block;
+		width: 79%;
+		vertical-align: top;
+	}
+	</style>
+</head>
+<body>
+
+	<h1>FCalendar Object Test</h1>
+
+	<input type="text" id="calendar" name="calendar" value="1981-04-12 10:52:00" />
+	
+	<label>Selected: <span id="selected"></span><br />
+	<label>-- Formatted: <span id="selected_format"></span></br>
+	<label>-- Date: <span id="selected_date"></span></br>
+	<label>-- Time: <span id="selected_time"></span></br>
+	<br />
+	<label>Visible: <span id="visible"></span><br />
+	<br /><br />
+
+
+
+	<h3>Selected</h3>
+	<ul class="inline-list">
+		<li><a href="#" id="selectBirthday" class="button small radius">July 6, 1977</a></li>
+	</ul>
+	
+	<h3>Visible</h3>
+	<ul class="inline-list">
+		<li><a href="#" id="nextMonth" class="button small radius">Next month</a></li>
+		<li><a href="#" id="prevMonth" class="button small radius">Previous month</a></li>
+		<li><a href="#" id="nextYear" class="button small radius">Next year</a></li>
+		<li><a href="#" id="prevYear" class="button small radius">Previous year</a></li>
+		<li><a href="#" id="moveToJuly" class="button small radius">Month: July</a></li>
+		<li><a href="#" id="moveTo2020" class="button small radius">Year: 2020</a></li>
+		<li><a href="#" id="moveToBirthday" class="button small radius">July, 1977</a></li>
+	</ul>
+	<script type="text/javascript">
+	
+	var cal = null;
+	
+	var updateDisplay = function(cal) {
+		$('span#selected').html(cal.selected());
+		$('span#selected_format').html(cal.toString());
+		$('span#selected_date').html(cal.toString('date'));
+		$('span#selected_time').html(cal.toString('time'));
+		$('span#visible').html(cal.visible());
+	}
+	
+	$(document).ready(function() {
+		var calField = $('#calendar');
+		cal = new FCalendar(calField);
+		updateDisplay(cal);
+		
+		calField.change(function() {
+			updateDisplay($(this).data('calendar'));
+		});
+		
+		
+		$('a#selectBirthday').click(function() {
+			cal.selected('1977-07-06');
+			updateDisplay(cal);
+		});
+
+		$('a#nextMonth').click(function() {
+			cal.moveMonth(1);
+			updateDisplay(cal);
+		});
+		
+		$('a#prevMonth').click(function() {
+			cal.moveMonth(-1);
+			updateDisplay(cal);
+		});
+		
+		$('a#nextYear').click(function() {
+			cal.moveYear(1);
+			updateDisplay(cal);
+		});
+		
+		$('a#prevYear').click(function() {
+			cal.moveYear(-1);
+			updateDisplay(cal);
+		});
+		
+		$('a#moveToJuly').click(function() {
+			cal.moveToMonth(6);
+			updateDisplay(cal);
+		});
+
+		$('a#moveTo2020').click(function() {
+			cal.moveToYear(2020);
+			updateDisplay(cal);
+		});
+
+		$('a#moveToBirthday').click(function() {
+			cal.moveTo('1977-07-06');
+			updateDisplay(cal);
+		});
+		
+	});
+	</script>
+</body>
+</head>

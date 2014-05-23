@@ -1,0 +1,160 @@
+<html>
+<head>
+	<title>Foundation Calendar: A date and time picker for the Foundation CSS Framework</title>
+	
+	<!-- Make sure you have the foundation base, and icons (v3) CSS -->
+	<link rel="stylesheet" type="text/css" href="lib/foundation/foundation.css" />
+	<link rel="stylesheet" type="text/css" href="lib/foundation-icon-fonts-3/foundation-icons.css" />
+	
+	<!-- Make sure you have jQuery, and moment.js loading properly -->
+	<script type="text/javascript" src="lib/jquery.js" ></script>
+	<script type="text/javascript" src="lib/moment.js" ></script>
+	<script type="text/javascript" src="lib/foundation/foundation.min.js" ></script>
+	<script type="text/javascript">
+	$(document).ready(function() {
+		$(document).foundation();
+	});
+	</script>
+	
+	<!-- Add the foundation calendar Javascript and CSS -->
+	<link rel="stylesheet" type="text/css" href="foundation_calendar.css" />
+	<script type="text/javascript" src="foundation_calendar.js" ></script>
+
+	
+	<style type="text/css">
+	label {
+		margin-top: 20px;
+	}
+	code {
+		font-size: 14px;
+	}
+	
+	.row {
+		margin-bottom: 20px;
+	}
+	
+	.header {
+		border-bottom: 1px solid #333;
+	}
+	
+	dl dt {
+		display: inline-block;
+		width: 18%;
+		margin-right: 1%;
+		vertical-align: top;
+	}
+	
+	dl dd {
+		display: inline-block;
+		width: 79%;
+		vertical-align: top;
+	}
+	</style>
+</head>
+<body>
+	<div class="fixed">
+		<nav class="top-bar" data-topbar>
+			<ul class="title-area">
+				<li class="name">
+					<h1><a href="#"><i class="fi-calendar"></i> Calendar</a></h1>
+				</li>
+			</ul>
+
+			<section class="top-bar-section">
+				<!-- Left Nav Section -->
+				<ul class="left">
+					<li class="has-dropdown">
+						<a href="#basicsetup">Basic Setup</a>
+						<ul class="dropdown">
+							<li><a href="#datetime">Date & Time</a></li>
+							<li><a href="#date">Date</a></li>
+							<li><a href="#time">Time</a></li>
+						</ul>
+					</li>
+					<li class="has-dropdown">
+						<a href="#displayformats">Display Formats</a>
+						<ul class="dropdown">
+							<li><a href="#dateformat">Date Format</a></li>
+							<li><a href="#timeformat">Time Format</a></li>
+						</ul>
+					</li>
+					<li class="has-dropdown">
+						<a href="#values">Values</a>
+						<ul class="dropdown">
+							<li><a href="#intialvalue">Initial Value</a></li>
+							<li><a href="#valueformat">Value Format</a></li>
+							<li><a href="#utcoffset">UTC Offset</a></li>
+						</ul>
+					</li>
+
+					<li class="has-dropdown">
+						<a href="#fixeddisplays">Fixed Displays</a>
+						<ul class="dropdown">
+							<li><a href="#fixedcalendar">Fixed Calendar</a></li>
+						</ul>
+					</li>
+					
+					<li class="has-dropdown">
+						<a href="#events">Events</a>
+						<ul class="dropdown">
+							<li><a href="#events">monthChange</a></li>
+							<li><a href="#events">monthPrev</a></li>
+							<li><a href="#events">monthNext</a></li>
+							<li><a href="#events">dateChange</a></li>
+							<li><a href="#events">timeChange</a></li>
+						</ul>
+					</li>
+					
+					<li class="has-dropdown">
+						<a href="#customizebehaviors">Customize Behaviors</a>
+						<ul class="dropdown">
+							<li><a href="#dateisclickable">dateIsClickable</a></li>
+							<li><a href="#buildothermonthdayui">buildOtherMonthDayUI</a></li>
+							<li><a href="#builddayui">buildDayUI</a></li>
+						</ul>
+					</li>
+					
+					
+				</ul>
+			</section>
+		</nav>
+	</div>
+	
+	<a name="basicsetup"></a>
+	<div class="row">
+		<div class="small-12 columns">
+			<h1><i class="fi-calendar"></i> Calendar <small class="show-for-large-only" style="margin-top:20px;">A date and time picker for the Foundation CSS framework</small></h1>
+			<p class="hide-for-large-only">A date and time picker for the Foundation CSS framework</p>
+		</div>
+	</div>
+	
+	<a name="datetime"></a>
+	<div class="row">
+		<div class="small-12 columns">
+			
+			<h3 class="header" data-magellan-destination="basicsetup">Basic Setup</h3>
+		</div>
+	</div>
+	
+	
+	<a name="date"></a>
+	<div class="row">
+		<div class="medium-12 large-8 columns">
+			<h3>Date & Time</h3>
+			<p>The calendar is setup through unobtrusive javascript.  All you have to do is add a parameter to the input field, and voila, you have a date/time picker:</p>
+
+			<div class="row">
+				<div class="small-12 medium-8 large-12 columns medium-centered">
+					<input type="text" data-date-time />
+				</div>
+			</div>
+			
+			<label>Code:</label>
+			<code>
+					&lt;input type="text" data-date-time /&gt;
+			</code>
+		</div>
+	</div>
+	
+</body>
+</head>
