@@ -140,7 +140,7 @@ FCalendar.prototype = {
 	},
 	
 	trigger: function(event, params) {
-		this.field.trigger(event, [this, this.opts].push(params));
+		this.field.trigger(event, [this, this.opts].concat(params));
 	}
 }
 
@@ -162,22 +162,29 @@ $.fcdp = {
 	init: function() {
 		$('input[data-date-time]').add($('input[data-date]')).add($('input[data-time]')).each(function() {
 			var input = $(this);
-			$.fcdp.wireupInput(input);
 			$.fcdp.buildUI(input);
+			$.fcdp.wireupInput(input);
+			var opts = input.data('opts');
+			input.trigger('selectedDateChange', [opts.calendar, opts.calendar.opts]);
 		});
 		
 		// Wireup the body to hide display elements when clicked.
 		$(document).click(function(evt) {
 			$('.calendar').not('.fixed').find('.date-picker').hide();
 			$('.calendar').find('.time-picker').hide();
-		});		
+		});
 	},
 	
 	wireupInput: function(input) {
-		input.bind('moveMonth', function(months) {
-			var opts = $(this).data('opts');
-			console.info(opts.calendar.visible());
-			$.fcdp.buildCalendar(opts);
+		input.bind('moveMonth', function(evt, calendar, opts, months) {
+			var i_opts = $(this).data('opts');			
+			$.fcdp.buildCalendar(i_opts);
+		});
+		
+		input.bind('selectedDateChange', function(evt, calendar, opts, date) {
+			var i_opts = $(this).data('opts');			
+			i_opts.dom.dateSelector.find('.value').html(calendar.toString('d'));
+			i_opts.dom.timeSelector.find('.value').html(calendar.toString('t'));
 		});
 	},
 	
@@ -619,13 +626,7 @@ $.fcdp = {
 				dp.find('a.current').removeClass('current');
 				$this.addClass('current');
 
-				var dayDate = $.fcdp.getDateFromString($this.attr('data-date'));
-				var fieldDate = $.fcdp.getFieldDate(opts) || $.fcdp.getWorkingDate(opts);
-
-				var newDate = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate(), fieldDate.getHours(), fieldDate.getMinutes(), fieldDate.getSeconds());
-				$.fcdp.setFieldDate(opts, newDate);
-				
-				opts.input.trigger('dateChange', [opts]);
+				var dayDate = opts.calendar.selected($this.attr('data-date'));
 				dp.hide();
 			});
 		}
