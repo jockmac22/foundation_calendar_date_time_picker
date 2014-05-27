@@ -5,33 +5,16 @@ __A date and time picker for the Foundation CSS framework.__
 
 ## Change Log
 
+- 5/27/2014 -> I've added the v0.2b branch which has been overhauled from the original v0.1b version.  Read the v0.2b Branch section below.
 - 3/5/2014 -> Added event triggers to the date and time picker, added a fixed display state for the calendar and updated the index.html docs.
 - 2/13/2014 -> Fixed an issue with FF/Safari dates not parsing correctly.  (Thank you Date.js)
 - 2/6/2014 -> Added a UTC offset calculation option that calculates the display time with an offset from UTC, and then stores the selected values as the properly calculated UTC time.
 
-##License
+## Notes on the v0.2b Branch ##
 
-The MIT License (MIT)
+I added a control "class" structure for the calendar management, and used it as an events handler for changes to and from the UI.  I also removed my custom date/string manipulators and date.js in favor of the moment.js library.  __This means you will have to update your format strings if you move to v0.2b__.  I apologize for the inconvenience in that respect, but moment is definitely a better way of managing the date/time values that are being manipulated.
 
-Copyright (c) 2014 John "Jocko" S. MacGregor Jr.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+I still have to update the docs in the v0.2b branch, particularly the library dependencies, but the implementation should still be the same.
 
 ##Introduction
 
@@ -65,3 +48,27 @@ The index.html file in the repository gives a full description of how to install
 If you want to customize the styles of the UI, you can do it directly through the foundation_calendar.css file, or you can add the _calendar.scss file to your Foundation SCSS components directory.  
 
 If you're using SCSS, don't forget to make sure your foundation.scss file imports the _calendar.scss file appropriately. Have fun!!!
+
+##License
+
+The MIT License (MIT)
+
+Copyright (c) 2014 John "Jocko" S. MacGregor Jr.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
