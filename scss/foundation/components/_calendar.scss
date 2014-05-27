@@ -6,13 +6,13 @@ $color1:                     #FFFFFF;          // Dominant background color (e.g
 $color2:                     #494A49;          // Dominant foreground color (e.g. Week days, calendar and time selector bodies).
 $color3:                     #AEACA1;          // Secondary background color (e.g. Month header)
 $color4:                     #75736A;          // Secondary foreground color (e.g. Month header)
-$color5:                     #377FA9;          // Medium color (e.g. Weekend backgrounds)
+$color5:                     #333333;          // Medium color (e.g. Weekend backgrounds)
 
 $date-picker-font:          "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
 $date-picker-background:    $color1;
 $date-picker-padding:       0 5% 5% 5%;
 $date-picker-border:        1px solid $color5;
-$time-picker-border:        1px solid $color2;
+$time-picker-border:        1px solid $color5;
 
 $header-background:         $color5;
 $header-foreground:         $color4;
@@ -159,13 +159,16 @@ $non-clickable-weekend-foreground: #CCC;
       position: relative;
       
       .time {
-        width: 97%;
-        margin: 0 2% 0 0%;
-        text-align: right;
-        height: $header-height;
-        font-size: $header-font-size;
-        color: $header-foreground;
-        padding: $month-padding;
+          width: 100%;
+          margin: 0 20% 0 2%;
+          text-align: center;
+          font-size: $month-font-size;
+          height: $month-height;
+          line-height: $month-height - 10px;
+          vertical-align: middle;
+        
+          color:  $month-color;
+          padding: $month-padding;
       }
     }    
     

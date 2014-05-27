@@ -199,8 +199,12 @@ $.fcdp = {
 		
 		input.bind('selectedDateChange', function(evt, calendar, opts, date) {
 			var i_opts = $(this).data('opts');			
-			i_opts.dom.dateSelector.find('.value').html(calendar.toString('d'));
-			i_opts.dom.timeSelector.find('.value').html(calendar.toString('t'));
+			if (i_opts.hasDatePicker) {
+				i_opts.dom.dateSelector.find('.value').html(calendar.toString('d'));
+			}
+			if (i_opts.hasTimePicker) { 
+				i_opts.dom.timeSelector.find('.value').html(calendar.toString('t'));
+			}
 		});
 	},
 	
@@ -481,7 +485,7 @@ $.fcdp = {
 				val = val > opts.max ? opts.max : (val < opts.min ? opts.min : val);
 			}
 			
-			tvc.find('input.display').val((''+val).lpad(pad));
+			tvc.find('input.display').val(val < 10 ? '0' + val : val);
 			
 			var calOpts = $this.closest('.calendar').data('opts');
 			$.fcdp.updateTime(calOpts);			
@@ -525,7 +529,9 @@ $.fcdp = {
 			}
 			hour %= 24;
 
-			opts.calendar.selected().hour(hour).minute(minute).second(second);
+			var selected = opts.calendar.selected();
+			selected.hour(hour).minute(minute).second(second);
+			opts.calendar.selected(selected);
 		}
 	},
 	

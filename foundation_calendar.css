@@ -1,4 +1,3 @@
-@charset "UTF-8";
 @import url("//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700");
 meta.foundation-mq-small {
   font-family: "/only screen and (max-width: 40em)/";
@@ -356,7 +355,6 @@ select {
 
   select:hover {
     background: #f2f2f2; } }
-
 /* Attach elements to the beginning or end of an input */
 .prefix,
 .postfix {
@@ -793,23 +791,25 @@ ol.check-list i {
     position: absolute;
     right: 0;
     display: none;
-    border: 1px solid #494a49;
+    border: 1px solid #333333;
     width: auto;
     height: auto;
     background: #FFF;
     z-index: 10000; }
     .calendar .time-picker .header {
-      background: #377fa9;
+      background: #333333;
       color: #75736a;
       width: 100%;
       position: relative; }
       .calendar .time-picker .header .time {
-        width: 97%;
-        margin: 0 2% 0 0%;
-        text-align: right;
-        height: 65px;
+        width: 100%;
+        margin: 0 20% 0 2%;
+        text-align: center;
         font-size: 28px;
-        color: #75736a;
+        height: 65px;
+        line-height: 55px;
+        vertical-align: middle;
+        color: white;
         padding: 5px 0; }
     .calendar .time-picker > .time .value-control {
       padding: 10px 3px 0 3px;
@@ -860,7 +860,7 @@ ol.check-list i {
     position: absolute;
     left: 0;
     display: none;
-    border: 1px solid #377fa9;
+    border: 1px solid #333333;
     width: 50%;
     background: white;
     z-index: 10000;
@@ -871,7 +871,7 @@ ol.check-list i {
     .calendar .date-picker:after {
       clear: both; }
     .calendar .date-picker .header {
-      background: #377fa9;
+      background: #333333;
       position: relative; }
       .calendar .date-picker .header .month {
         width: 100%;
@@ -937,7 +937,7 @@ ol.check-list i {
             background: #aeaca1;
             color: #75736a; }
           .calendar .date-picker .weeks .week .day.weekend.selected, .calendar .date-picker .weeks .week .day.selected {
-            background: #377fa9;
+            background: #333333;
             color: white; }
           .calendar .date-picker .weeks .week .day.other-month {
             color: #e6e6e6;
@@ -953,7 +953,7 @@ ol.check-list i {
           color: #aeaca1;
           background: #75736a; }
           .calendar .date-picker .weeks .week a.day:hover.weekend.selected, .calendar .date-picker .weeks .week a.day:hover.selected {
-            background: #377fa9;
+            background: #333333;
             color: white; }
         .calendar .date-picker .weeks .week.labels {
           height: 23px; }
