@@ -1,0 +1,79 @@
+<h1>Calendar</h1>
+
+<p><strong>A date and time picker for the Foundation CSS framework.</strong></p>
+
+<h2>Change Log</h2>
+
+<ul>
+<li>5/27/2014 -> I&rsquo;ve added the v0.2b branch which has been overhauled from the original v0.1b version.  Read the v0.2b Branch section below.</li>
+<li>3/5/2014 -> Added event triggers to the date and time picker, added a fixed display state for the calendar and updated the index.html docs.</li>
+<li>2/13/2014 -> Fixed an issue with FF/Safari dates not parsing correctly.  (Thank you Date.js)</li>
+<li>2/6/2014 -> Added a UTC offset calculation option that calculates the display time with an offset from UTC, and then stores the selected values as the properly calculated UTC time.</li>
+</ul>
+
+
+<h2>Notes on the v0.2b Branch</h2>
+
+<p>I added a control &ldquo;class&rdquo; structure for the calendar management, and used it as an events handler for changes to and from the UI.  I also removed my custom date/string manipulators and date.js in favor of the moment.js library.  <strong>This means you will have to update your format strings if you move to v0.2b</strong>.  I apologize for the inconvenience in that respect, but moment is definitely a better way of managing the date/time values that are being manipulated.</p>
+
+<p>I still have to update the docs in the v0.2b branch, particularly the library dependencies, but the implementation should still be the same.</p>
+
+<h2>Introduction</h2>
+
+<p>Noting that the Foundation CSS Framework was lacking in the world of date and time picking, this project is an attempt to make the date and time picking process smoother and more considerate of the needs of both the user and the backend data handling system.</p>
+
+<p>Having used the Date/Time picker for other frameworks, and noting that Foundation really only had one option that seemed functional, I decided to create one from the ground up.</p>
+
+<p>The most popular option out there has one issue that was always difficult to get over: <strong>the input field was used as the display field</strong>.</p>
+
+<p>This causes an issue because the user will want to see a more friendly, human readable date format (e.g. January 1, 1970 @ 2:00 pm), while the system managing the data will do better handling the date in a more easily parsed format (e.g. 1970-01-01 14:00:00).</p>
+
+<p>Which is exactly why I created Calendar, for the Foundation CSS framework.</p>
+
+<h2>Requirements</h2>
+
+<p>There are several requirements you will need to make the Calendar work.  Here&rsquo;s the list:</p>
+
+<ul>
+<li><strong>Foundation</strong> &ndash; Well, this is a foundation plugin, so we might as well include that, because without it we&rsquo;re nothing.</li>
+<li><strong>Foundation Icon Fonts 3</strong> &ndash; Another external dependency, but this one is used to create a better UI than would be available through my CSS skills.  The source can be <a href="http://zurb.com/playground/foundation-icon-fonts-3">found here</a>, but it&rsquo;s also included in this repository.</li>
+<li><strong>jQuery</strong> &ndash; Well, it&rsquo;s jQuery, it&rsquo;s included in the repo.</li>
+<li><strong>date.js</strong> &ndash; This is a date manipulation plugin that I didn&rsquo;t write myself.  It can be <a href="http://www.datejs.com/">found here</a>.  It&rsquo;s a pretty cool little tool for date manipulation.  Ideally, it would be nice to just build the date calculations necessary to make Calendar work, and leave the rest out, that way it&rsquo;s more light-weight not externally dependent.</li>
+<li><strong>date-helpers.js</strong> &ndash; This is my own Date modification and manipulation helpers.  They are included in the repo, and built into the minified version of foundation_calendar.js.</li>
+<li><strong>string-helpers.js</strong> &ndash; This is my own String modification and manipulation helpers.  They are included in the repo, and built into the minified version of foundation_calendar.js.</li>
+</ul>
+
+
+<h2>Installation</h2>
+
+<p>The index.html file in the repository gives a full description of how to install and use the plugin.  Read the &lt;head&gt; section of the html to see the file requirements, and view the file to read about how to implement the plugin.</p>
+
+<h2>Customization</h2>
+
+<p>If you want to customize the styles of the UI, you can do it directly through the foundation_calendar.css file, or you can add the _calendar.scss file to your Foundation SCSS components directory.</p>
+
+<p>If you&rsquo;re using SCSS, don&rsquo;t forget to make sure your foundation.scss file imports the _calendar.scss file appropriately. Have fun!!!</p>
+
+<h2>License</h2>
+
+<p>The MIT License (MIT)</p>
+
+<p>Copyright &copy; 2014 John &ldquo;Jocko&rdquo; S. MacGregor Jr.</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &ldquo;Software&rdquo;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED &ldquo;AS IS&rdquo;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</p>
