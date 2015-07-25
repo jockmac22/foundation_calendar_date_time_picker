@@ -261,6 +261,11 @@ $.fcdp = {
 		this.buildCalendar(opts);
 		this.buildTime(opts);
 		this.updateTimePicker(opts);
+
+		// workaround to make sure cleared-out field starts out cleared-out
+		if( null == this.getFieldDate(opts) ) {
+			$.fcdp.setWorkingDate(opts, null);
+		}
 	},
 	
 	buildTime: function(opts) {
