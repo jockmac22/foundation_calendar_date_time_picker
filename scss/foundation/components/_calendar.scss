@@ -46,7 +46,7 @@ $large-day-height:			$large-day-font-size * 2.25;
 $hover-border:				1px solid $primary-color;
 $hover-weekend-border:		$hover-border;
 
-$weekend-background:		$secondary_color;
+$weekend-background:		$secondary-color;
 $weekend-foreground:		$primary-color;
 $weekend-border:			1px solid $secondary-color;
 
@@ -303,8 +303,8 @@ $non-clickable-weekend-foreground: #CCC;
 				display: inline-block;
 				text-align: center;
 				font-size: $large-day-font-size;
-				background: $day_background;
-				color: $day_foreground;
+				background: $day-background;
+				color: $day-foreground;
 				border: 1px solid #FFF;
 				vertical-align: middle;
 				padding: $day-padding;
