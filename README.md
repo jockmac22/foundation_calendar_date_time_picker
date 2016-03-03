@@ -1,4 +1,8 @@
-<span style="color: red;font-weight: bold;">If anyone would like to take over this code base, I'm happy to hand it over, with maybe a nod to me somewhere deep in the docs/code.  I'm no longer actively using Foundation, and my attentions have been draw away pretty heavily.</span>
+### No Longer Supported
+
+Unfortunately I am no longer supporting this repository.  For those who have been watching sorry for the distracted level of support.  I really appreciate the help the community has offered on this project.
+
+If anyone would like to take over this code base, I'm happy to hand it over, with maybe a nod to me somewhere deep in the docs/code.  I'm no longer actively using Foundation, and my attentions have been draw in other directions.
 
 Calendar
 ====================================
