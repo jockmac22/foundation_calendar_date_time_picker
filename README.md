@@ -1,3 +1,5 @@
+<span style="color: red;font-weight: bold;">If anyone would like to take over this code base, I'm happy to hand it over, with maybe a nod to me somewhere deep in the docs/code.  I'm no longer actively using Foundation, and my attentions have been draw away pretty heavily.</span>
+
 Calendar
 ====================================
 
